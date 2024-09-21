@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence
+http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd" version="2.2">
+    <persistence-unit name="bd_colaboradores" transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+        <class>ar.edu.utn.dds.k3003.model.Colaborador</class>
+
+        <properties>
+            <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://dpg-cpltaiij1k6c739r0p2g-a.oregon-postgres.render.com/bd_colaboradores"/>
+
+            <property name="javax.persistence.jdbc.user" value="bd_colaboradores_user"/>
+            <property name="javax.persistence.jdbc.password" value="EUM5RPkfZmEd6d6mG8UZOM1Irmmy1Fvx" />
+
+
+            <!-- Creación de tablas -->
+            <property name="hibernate.flushMode" value="FLUSH_AUTO" />
+            <property name="hibernate.hbm2ddl.auto" value="update" />
+
+            <!-- Mostrar las sentencias de SQL por consola -->
+            <property name="hibernate.show_sql" value="true" />
+            <property name="hibernate.format_sql" value="true" />
+            <property name="hibernate.use_sql_comments" value="true" />
+
+            <property name="hibernate.connection.pool_size" value="1" />
+
+        </properties>
+    </persistence-unit>
+</persistence>
+
