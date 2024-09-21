@@ -35,7 +35,7 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradore
   private EntityManager entityManager;
 
   public Fachada() {
-    this.entityManagerFactory = Persistence.createEntityManagerFactory("bd_colaboradores");
+    this.entityManagerFactory = Persistence.createEntityManagerFactory("defaultdb");
     this.entityManager = entityManagerFactory.createEntityManager();
     this.colaboradorRepository = new ColaboradorRepository();
     this.colaboradorRepository.setEntityManager(entityManager);

@@ -37,7 +37,7 @@ public class WebApp {
     fachada.setViandasProxy(new ViandasProxy(objectMapper));
     fachada.setLogisticaProxy(new LogisticaProxy(objectMapper));
 
-    var port = Integer.parseInt(env.getOrDefault("PORT", "8080"));
+    var port = Integer.parseInt(env.getOrDefault("PORT", "8082"));
 
     var app = Javalin.create(config -> {
       config.jsonMapper(new JavalinJackson().updateMapper(mapper -> {
@@ -84,6 +84,6 @@ public class WebApp {
         configOverrides.put(key, value);
       }
     }
-    return Persistence.createEntityManagerFactory("bd_colaboradores", configOverrides);
+    return Persistence.createEntityManagerFactory("defaultdb", configOverrides);
   }
 }
