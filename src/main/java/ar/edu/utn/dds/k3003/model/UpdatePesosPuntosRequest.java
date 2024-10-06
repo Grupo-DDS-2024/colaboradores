@@ -4,12 +4,12 @@ import lombok.Getter;
 
 @Getter
 public class UpdatePesosPuntosRequest {
-  private double pesosDonados;
-  private double viandasDistribuidas;
-  private double viandasDonadas;
-  private double tarjetasRepartidas;
-  private double heladerasActivas;
+    private double pesosDonados;
+    private double viandasDistribuidas;
+    private double viandasDonadas;
+    private double tarjetasRepartidas;
+    private double heladerasActivas;
 
-  public UpdatePesosPuntosRequest() {
-  }
+    public UpdatePesosPuntosRequest() {
+    }
 }

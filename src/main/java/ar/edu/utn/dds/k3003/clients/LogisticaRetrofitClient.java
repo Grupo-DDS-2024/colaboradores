@@ -9,8 +9,8 @@ import retrofit2.http.Query;
 import java.util.List;
 
 public interface LogisticaRetrofitClient {
-  @GET("traslados/search/findByColaboradorId")
-  Call<List<TrasladoDTO>> get(@Query("id") Long colaboradorId,
-                              @Query("mes") Integer mes,
-                              @Query("anio") Integer anio);
+    @GET("traslados/search/{colaboradorId}")
+    Call<List<TrasladoDTO>> get(@Path("colaboradorId") Long colaboradorId,
+                                @Query("mes") Integer mes,
+                                @Query("anio") Integer anio);
 }

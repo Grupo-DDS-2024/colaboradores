@@ -33,23 +33,23 @@ import java.util.Map;
 @NoArgsConstructor
 public class Colaborador {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Column(name = "nombre")
-  private String nombre;
+    @Column(name = "nombre")
+    private String nombre;
 
-  @ElementCollection(targetClass = FormaDeColaborarEnum.class, fetch = FetchType.EAGER)
-  @CollectionTable(name = "colaborador_formas", joinColumns = @JoinColumn(name = "colaborador_id"))
-  @Enumerated(EnumType.STRING)
-  @Column(name = "forma", nullable = false)
-  private List<FormaDeColaborarEnum> formas = new ArrayList<>();
+    @ElementCollection(targetClass = FormaDeColaborarEnum.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "colaborador_formas", joinColumns = @JoinColumn(name = "colaborador_id"))
+    @Enumerated(EnumType.STRING)
+    @Column(name = "forma", nullable = false)
+    private List<FormaDeColaborarEnum> formas = new ArrayList<>();
 
-  @PreRemove
-  private void preRemove() {
-    this.formas.clear();
-  }
+    @PreRemove
+    private void preRemove() {
+        this.formas.clear();
+    }
 
 
 }

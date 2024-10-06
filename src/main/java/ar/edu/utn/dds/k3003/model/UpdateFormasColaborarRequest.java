@@ -7,9 +7,9 @@ import java.util.List;
 
 @Getter
 public class UpdateFormasColaborarRequest {
-  private List<FormaDeColaborarEnum> formas;
+    private List<FormaDeColaborarEnum> formas;
 
-  public UpdateFormasColaborarRequest() {
-  }
+    public UpdateFormasColaborarRequest() {
+    }
 
 }

@@ -20,42 +20,67 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @NoArgsConstructor
 public class ColaboradorRepository {
-  @Getter
-  @Setter
-  private EntityManager entityManager;
-  @Setter
-  private EntityManagerFactory entityManagerFactory;
+    @Setter
+    private EntityManagerFactory entityManagerFactory;
 
-  public ColaboradorRepository(EntityManager entityManager, EntityManagerFactory entityManagerFactory) {
-    super();
-    this.entityManager = entityManager;
-    this.entityManagerFactory = entityManagerFactory;
-  }
-
-  public Colaborador save(Colaborador colaborador) {
-    if (Objects.isNull(colaborador.getId())) {
-      entityManager.getTransaction().begin();
-      entityManager.persist(colaborador);
-      entityManager.getTransaction().commit();
+    public ColaboradorRepository(EntityManagerFactory entityManagerFactory) {
+        this.entityManagerFactory = entityManagerFactory;
     }
-    /*else {
-      this.colaboradores.add(colaborador);
-    }*/
-    return colaborador;
-  }
 
-  public Colaborador findById(Long id) {
-    Colaborador colaborador = entityManager.find(Colaborador.class, id);
-    if (Objects.isNull(colaborador)){
-      throw new NoSuchElementException(String.format("No hay un colaborador de id: %s", id));
+    public Colaborador save(Colaborador colaborador) {
+        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
+
+        entityManager.getTransaction().begin();
+
+        if (Objects.isNull(colaborador.getId())) {
+            entityManager.persist(colaborador);
+        } else {
+            colaborador = entityManager.merge(colaborador);
+        }
+
+        entityManager.getTransaction().commit();
+
+        entityManager.close();
+        return colaborador;
     }
-    return colaborador;
 
-  }
 
-  public void update(Colaborador colaborador,  List<FormaDeColaborarEnum> formas) {
-    entityManager.getTransaction().begin();
-    colaborador.setFormas(formas);
-    entityManager.getTransaction().commit();
-  }
+    public Colaborador findById(Long id) {
+        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+        Colaborador colaborador = entityManager.find(Colaborador.class, id);
+        if (Objects.isNull(colaborador)) {
+            entityManager.getTransaction().rollback();
+            entityManager.close();
+            throw new NoSuchElementException(String.format("No hay un colaborador de id: %s", id));
+        }
+        entityManager.getTransaction().commit();
+        entityManager.close();
+        return colaborador;
+
+    }
+
+    public void update(Colaborador colaborador, List<FormaDeColaborarEnum> formas) {
+        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+        colaborador.setFormas(formas);
+        entityManager.merge(colaborador);
+        entityManager.getTransaction().commit();
+        entityManager.close();
+    }
+
+    public long cantColaboradores() {
+        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
+        Long count = 0L;
+        entityManager.getTransaction().begin();
+        try {
+            count = (Long) entityManager.createQuery("SELECT COUNT(id) FROM Colaborador").getSingleResult();
+            entityManager.getTransaction().commit();
+        } catch (RuntimeException e) {
+            if (entityManager.getTransaction().isActive())
+                entityManager.getTransaction().rollback();
+            throw e;
+        }
+        return count;
+    }
 }

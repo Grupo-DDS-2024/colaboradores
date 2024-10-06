@@ -18,68 +18,69 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public class LogisticaProxy implements FachadaLogistica {
-  private final String endpoint;
-  private final LogisticaRetrofitClient service;
+    private final String endpoint;
+    private final LogisticaRetrofitClient service;
 
-  public LogisticaProxy(ObjectMapper objectMapper) {
-    var env = System.getenv();
-    this.endpoint = env.getOrDefault("URL_LOGISTICA", "http://localhost:8082/");
+    public LogisticaProxy(ObjectMapper objectMapper) {
+        var env = System.getenv();
+        this.endpoint = env.getOrDefault("URL_LOGISTICA", "http://localhost:8082/");
 
-    var retrofit =
-        new Retrofit.Builder()
-            .baseUrl(this.endpoint)
-            .addConverterFactory(JacksonConverterFactory.create(objectMapper))
-            .build();
+        var retrofit =
+                new Retrofit.Builder()
+                        .baseUrl(this.endpoint)
+                        .addConverterFactory(JacksonConverterFactory.create(objectMapper))
+                        .build();
 
-    this.service = retrofit.create(LogisticaRetrofitClient.class);
-  }
-
-
-  @Override
-  public RutaDTO agregar(RutaDTO rutaDTO) {
-    return null;
-  }
-
-  @Override
-  public TrasladoDTO buscarXId(Long aLong) throws NoSuchElementException {
-    return null;
-  }
-
-  @Override
-  public TrasladoDTO asignarTraslado(TrasladoDTO trasladoDTO) throws TrasladoNoAsignableException {
-    return null;
-  }
-  @SneakyThrows
-  @Override
-  public List<TrasladoDTO> trasladosDeColaborador(Long colaboradorId, Integer mes, Integer anio) {
-    Response<List<TrasladoDTO>> execute = service.get(colaboradorId,mes,anio).execute();
-
-    if (execute.isSuccessful()) {
-      return execute.body();
+        this.service = retrofit.create(LogisticaRetrofitClient.class);
     }
-    if (execute.code() == HttpStatus.NOT_FOUND.getCode()) {
-      throw new NoSuchElementException("No se encontraron traslados del colaborador " + colaboradorId);
+
+
+    @Override
+    public RutaDTO agregar(RutaDTO rutaDTO) {
+        return null;
     }
-    throw new RuntimeException("Error al conectarse con el componente Logistica");
-  }
 
-  @Override
-  public void setHeladerasProxy(FachadaHeladeras fachadaHeladeras) {
+    @Override
+    public TrasladoDTO buscarXId(Long aLong) throws NoSuchElementException {
+        return null;
+    }
 
-  }
+    @Override
+    public TrasladoDTO asignarTraslado(TrasladoDTO trasladoDTO) throws TrasladoNoAsignableException {
+        return null;
+    }
 
-  @Override
-  public void setViandasProxy(FachadaViandas fachadaViandas) {
+    @SneakyThrows
+    @Override
+    public List<TrasladoDTO> trasladosDeColaborador(Long colaboradorId, Integer mes, Integer anio) {
+        Response<List<TrasladoDTO>> execute = service.get(colaboradorId, mes, anio).execute();
 
-  }
+        if (execute.isSuccessful()) {
+            return execute.body();
+        }
+        if (execute.code() == HttpStatus.NOT_FOUND.getCode()) {
+            throw new NoSuchElementException("No se encontraron traslados del colaborador " + colaboradorId);
+        }
+        throw new RuntimeException("Error al conectarse con el componente Logistica");
+    }
 
-  @Override
-  public void trasladoRetirado(Long aLong) {
+    @Override
+    public void setHeladerasProxy(FachadaHeladeras fachadaHeladeras) {
 
-  }
+    }
 
-  @Override
-  public void trasladoDepositado(Long aLong) {
+    @Override
+    public void setViandasProxy(FachadaViandas fachadaViandas) {
 
-  }
+    }
+
+    @Override
+    public void trasladoRetirado(Long aLong) {
+
+    }
+
+    @Override
+    public void trasladoDepositado(Long aLong) {
+
+    }
 }
