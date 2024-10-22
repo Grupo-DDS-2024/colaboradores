@@ -2,19 +2,14 @@ package ar.edu.utn.dds.k3003.model;
 
 import ar.edu.utn.dds.k3003.facades.dtos.FormaDeColaborarEnum;
 import ar.edu.utn.dds.k3003.model.formaDeColaborar.FormaDeColaborar;
-import ar.edu.utn.dds.k3003.model.formaDeColaborar.Implementacion;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.eclipse.jetty.util.Uptime;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Entity
 @Table(name = "colaboradores")
@@ -33,13 +28,11 @@ public class Colaborador {
 
 
 
-    @Getter
-    @Setter
-    //@ElementCollection
-    //@CollectionTable(name="formas de colaboradores",joinColumns = @JoinColumn(name="colaborador_id"))
-    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL},orphanRemoval = true)
-    @JoinColumn(name = "colaborador_id")
-    private List<Implementacion> formas = new ArrayList<>();
+    @ElementCollection(targetClass = FormaDeColaborarEnum.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "colaborador_formas", joinColumns = @JoinColumn(name = "colaborador_id"))
+    @Enumerated(EnumType.STRING)
+    @Column(name = "forma",nullable = false)
+    private List<FormaDeColaborarEnum> formas = new ArrayList<>();
 
 
     @Column(name= "cantHeladeras")
@@ -49,6 +42,11 @@ public class Colaborador {
         this.id = id;
         this.nombre = nombre;
 
+    }
+
+    public Colaborador(String nombre, List<FormaDeColaborarEnum> formas) {
+        this.nombre=nombre;
+        this.formas=formas;
     }
 
     @PreRemove

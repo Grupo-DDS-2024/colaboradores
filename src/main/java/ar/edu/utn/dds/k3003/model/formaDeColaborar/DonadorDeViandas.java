@@ -9,7 +9,9 @@ import java.time.LocalDateTime;
 
 
 @Entity
-public class DonadorDeViandas extends Implementacion{
+@Table(name = "formas_colaborar")
+public class DonadorDeViandas implements  FormaDeColaborar{
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

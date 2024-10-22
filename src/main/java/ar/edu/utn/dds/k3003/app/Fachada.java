@@ -62,9 +62,8 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradore
 
     @Override
     public ColaboradorDTO agregar(ColaboradorDTO colaboradorDTO) {
-        Colaborador colaborador = new Colaborador(colaboradorDTO.getId(), colaboradorDTO.getNombre());
+        Colaborador colaborador = new Colaborador(colaboradorDTO.getNombre(), colaboradorDTO.getFormas());
         colaborador = this.colaboradorRepository.save(colaborador);
-        this.agregarFormasDeColaborar(colaboradorDTO.getFormas(),colaborador.getId());
         return colaboradorMapper.map(colaborador);
     }
 
@@ -77,19 +76,23 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradore
 
     @Override
     public Double puntos(Long colaboradorId) throws NoSuchElementException {
-//        Integer mesActual = LocalDateTime.now().getMonthValue();
-//        Integer anioActual = LocalDateTime.now().getYear();
-//
-//        List<ViandaDTO> viandasDTO = fachadaViandas.viandasDeColaborador(colaboradorId, mesActual, anioActual);
-//        Integer viandasDonadas = viandasDTO.size();
-//        List<TrasladoDTO> trasladosDTO = fachadaLogistica.trasladosDeColaborador(colaboradorId, mesActual, anioActual);
-//        Integer traslados = trasladosDTO.size();
-//
-//        return
-//                coeficientesPuntos.getValor(TipoCoeficiente.VIANDAS_DONADAS) * viandasDonadas +
-//                        coeficientesPuntos.getValor(TipoCoeficiente.VIANDAS_DISTRIBUIDAS) * traslados;
-        Colaborador colaborador = colaboradorRepository.findById(colaboradorId);
-        return colaborador.getFormas().stream().mapToDouble(forma -> forma.calcularPuntos(colaboradorId)).sum();
+        Colaborador colaborador = this.colaboradorRepository.findById(colaboradorId);
+        List<FormaDeColaborarEnum> formasDeColaborar = colaborador.getFormas();
+        List<FormaDeColaborar> colaboraciones = new ArrayList<>();
+        for (FormaDeColaborarEnum forma:formasDeColaborar){
+            switch (forma){
+                case DONADOR:
+                    colaboraciones.add(DonadorDeViandas.getInstance(this.fachadaViandas));
+                    break;
+                case TRANSPORTADOR:
+                    colaboraciones.add(Transportador.getInstance(this.fachadaLogistica));
+                    break;
+                default:
+                    throw new IllegalArgumentException("Forma de colaborar desconocida");
+
+            }
+        }
+        return colaboraciones.stream().mapToDouble(forma -> forma.calcularPuntos(colaboradorId)).sum();
     }
 
 
@@ -98,10 +101,10 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradore
     public ColaboradorDTO modificar(Long colaboradorId, List<FormaDeColaborarEnum> formas) throws NoSuchElementException {
         // Buscar el colaborador por ID
         Colaborador colaborador = this.colaboradorRepository.findById(colaboradorId);
-        colaboradorRepository.update(colaborador, castearFormaDeColaborar(formas));
+        colaboradorRepository.update(colaborador,formas);
         // Mapear y devolver el colaborador actualizado como DTO
         return colaboradorMapper.map(colaborador);
-}
+    }
 
 
 //    public ColaboradorDTO modificar2(Long colaboradorId, List<FormaDeColaborarEnum> formas) throws NoSuchElementException {
@@ -112,11 +115,7 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradore
 //        return colaboradorMapper.map(colaborador);
 //    }
 
-    public void agregarForma(Long colaboradorId, List<Implementacion> formas){
-        Colaborador colaborador = this.colaboradorRepository.findById(colaboradorId);
-        colaborador.getFormas().addAll(formas);
-        this.colaboradorRepository.save(colaborador);
-    }
+
 
     @Override
     public void actualizarPesosPuntos(Double pesosDonados, Double viandasDistribuidas, Double viandasDonadas, Double tarjetasRepartidas, Double heladerasActivas) {
@@ -154,60 +153,8 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradore
         colaboradorRepository.save(colaborador);
     }
 
-    public int cantHeladerasReparadas(Long colaboradorId){
+    public int cantHeladerasReparadas(Long colaboradorId) {
         return this.colaboradorRepository.findById(colaboradorId).getCantHeladerasReparadas();
     }
 
-//    public List<Implementacion> agregarFormasDeColaborar(List<FormaDeColaborarEnum> formas, Long id){
-//        List<Implementacion> formasAgregar = new ArrayList<>();
-//        for (int i = 0; i < formas.size(); i++) {
-//            if (formas.get(i).equals(FormaDeColaborarEnum.DONADOR)){
-//                DonadorDeViandas donadorDeViandas = DonadorDeViandas.getInstance(this.fachadaViandas);
-//                formasAgregar.add(donadorDeViandas);
-//            } else if (formas.get(i).equals(FormaDeColaborarEnum.TRANSPORTADOR)){
-//                Transportador transportador = Transportador.getInstance(this.getFachadaLogistica());
-//            }
-//
-//
-//
-//        }
-//        this.agregarForma(id, formasAgregar);
-//        return formasAgregar;
-//    }
-    public void agregarFormasDeColaborar(List<FormaDeColaborarEnum> formas, Long id){
-        List <Implementacion> formasAgregar =new ArrayList<>();
-        for(FormaDeColaborarEnum forma : formas){
-            switch (forma){
-                case DONADOR:
-                    DonadorDeViandas donadorDeViandas = DonadorDeViandas.getInstance(this.fachadaViandas);
-                    formasAgregar.add(donadorDeViandas);
-                    break;
-                case TRANSPORTADOR:
-                    Transportador transportador = Transportador.getInstance(this.fachadaLogistica);
-                    formasAgregar.add(transportador);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Forma de colaborar desconocida");
-            }
-        }
-        this.agregarForma(id,formasAgregar);
-    }
-
-
-    public List<Implementacion> castearFormaDeColaborar(List<FormaDeColaborarEnum> formas){
-        List<Implementacion> formasAgregar = new ArrayList<>();
-        for (int i = 0; i < formas.size(); i++) {
-            if (formas.get(i).equals(FormaDeColaborarEnum.DONADOR)){
-
-                DonadorDeViandas donadorDeViandas = DonadorDeViandas.getInstance(this.getFachadaViandas());
-                donadorDeViandas.setFachadaViandas(this.fachadaViandas);
-                formasAgregar.add(donadorDeViandas);
-            }
-            if (formas.get(i).equals(FormaDeColaborarEnum.TRANSPORTADOR)){
-                Transportador transportador = Transportador.getInstance(this.getFachadaLogistica());
-                formasAgregar.add(transportador);
-            }
-        }
-        return formasAgregar;
-    }
 }

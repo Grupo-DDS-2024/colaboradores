@@ -3,22 +3,14 @@ package ar.edu.utn.dds.k3003.repositories;
 import ar.edu.utn.dds.k3003.facades.dtos.FormaDeColaborarEnum;
 import ar.edu.utn.dds.k3003.model.Colaborador;
 import ar.edu.utn.dds.k3003.model.formaDeColaborar.FormaDeColaborar;
-import ar.edu.utn.dds.k3003.model.formaDeColaborar.Implementacion;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
 
 @NoArgsConstructor
 public class ColaboradorRepository {
@@ -62,10 +54,10 @@ public class ColaboradorRepository {
 
     }
 
-    public void update(Colaborador colaborador, List<Implementacion> formas) {
+    public void update(Colaborador colaborador, List<FormaDeColaborarEnum> formas) {
         EntityManager entityManager = this.entityManagerFactory.createEntityManager();
         entityManager.getTransaction().begin();
-        colaborador.getFormas().addAll(formas);
+        colaborador.setFormas(formas);
         entityManager.merge(colaborador);
         entityManager.getTransaction().commit();
         entityManager.close();

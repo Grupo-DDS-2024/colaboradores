@@ -9,7 +9,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-public class Transportador extends Implementacion{
+@Table(name = "formas_colaborar")
+public class Transportador implements FormaDeColaborar{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -17,6 +18,7 @@ public class Transportador extends Implementacion{
     FachadaLogistica fachadaLogistica;
     @Transient
     Double coeficiente = 1.0;
+    @Transient
     private static Transportador instancia = null;
 
     public Transportador(FachadaLogistica fachadaLogistica) {

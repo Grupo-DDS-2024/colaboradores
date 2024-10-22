@@ -8,7 +8,6 @@ import ar.edu.utn.dds.k3003.model.TipoCoeficiente;
 import ar.edu.utn.dds.k3003.model.UpdateFormasColaborarRequest;
 import ar.edu.utn.dds.k3003.model.UpdatePesosPuntosRequest;
 import ar.edu.utn.dds.k3003.model.formaDeColaborar.DonadorDeViandas;
-import ar.edu.utn.dds.k3003.model.formaDeColaborar.FormaDeColaborar;
 import ar.edu.utn.dds.k3003.model.formaDeColaborar.Transportador;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
@@ -50,19 +49,8 @@ public class ColaboradorController {
 
     public void modificar(Context context) {
         var id = context.pathParamAsClass("colaboradorId", Long.class).get();
-
         List<FormaDeColaborarEnum> formas = context.bodyAsClass(UpdateFormasColaborarRequest.class).getFormas();
-        // {
-        //  "formas": [
-        //    "DONADOR",
-        //    "TRANSPORTADOR"
-        //  ]
-        //}
-
-        fachada.agregarFormasDeColaborar(formas, id);
-
-
-        try {
+        try{
             var colaboradorDTO = this.fachada.modificar(id, formas);
             context.json(colaboradorDTO);
         } catch (NoSuchElementException ex) {

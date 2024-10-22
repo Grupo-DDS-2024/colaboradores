@@ -9,17 +9,19 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-public class DonadorDePesos extends Implementacion {
+@Table(name = "formas_colaborar")
+public class DonadorDePesos implements FormaDeColaborar {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private  Long id;
+    private Long id;
     @Transient
     double coeficiente = 0.5;
     @Transient
     Fachada colaboradorInstancia;
 
     @Getter
+    @Transient
     private static DonadorDePesos instancia = null;
 
 
