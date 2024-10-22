@@ -3,16 +3,21 @@ package ar.edu.utn.dds.k3003.controller;
 import ar.edu.utn.dds.k3003.app.Fachada;
 import ar.edu.utn.dds.k3003.facades.dtos.ColaboradorDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.FormaDeColaborarEnum;
+import ar.edu.utn.dds.k3003.model.Donacion;
 import ar.edu.utn.dds.k3003.model.TipoCoeficiente;
 import ar.edu.utn.dds.k3003.model.UpdateFormasColaborarRequest;
 import ar.edu.utn.dds.k3003.model.UpdatePesosPuntosRequest;
+import ar.edu.utn.dds.k3003.model.formaDeColaborar.DonadorDeViandas;
+import ar.edu.utn.dds.k3003.model.formaDeColaborar.FormaDeColaborar;
+import ar.edu.utn.dds.k3003.model.formaDeColaborar.Transportador;
+import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.step.StepMeterRegistry;
 
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.time.LocalDateTime;
+import java.util.*;
 
 public class ColaboradorController {
 
@@ -47,6 +52,15 @@ public class ColaboradorController {
         var id = context.pathParamAsClass("colaboradorId", Long.class).get();
 
         List<FormaDeColaborarEnum> formas = context.bodyAsClass(UpdateFormasColaborarRequest.class).getFormas();
+        // {
+        //  "formas": [
+        //    "DONADOR",
+        //    "TRANSPORTADOR"
+        //  ]
+        //}
+
+        fachada.agregarFormasDeColaborar(formas, id);
+
 
         try {
             var colaboradorDTO = this.fachada.modificar(id, formas);
@@ -71,7 +85,7 @@ public class ColaboradorController {
     public void puntos(Context context) {
         var id = context.pathParamAsClass("colaboradorId", Long.class).get();
         try {
-            var puntosColaborador = this.fachada.puntos(id);
+            var puntosColaborador = fachada.puntos(id);
             context.json(puntosColaborador);
         } catch (NoSuchElementException ex) {
             context.result(ex.getLocalizedMessage());
@@ -102,6 +116,33 @@ public class ColaboradorController {
         } catch (Exception e) {
             context.result(e.getLocalizedMessage());
             context.status(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    // Para ello expondrá un endpoint a ser utilizado por este sistema de terceros. El mismo recibirá el monto, la fecha de acreditación
+    // y el colaboradorId. Esto influirá en el cálculo de puntos más adelante.
+    public void recibirDonacion(Context context) {
+        try {
+            var donacion = context.bodyAsClass(Donacion.class);
+            Donacion donacionFix = new Donacion(donacion.getMonto(), LocalDateTime.now(), donacion.getColaboradorId());
+            Map<String, Object> response = new HashMap<>();
+            response.put("Mensaje", "Donación registrada correctamente");
+            response.put("Donación", donacionFix);
+            this.fachada.registrarDonacion(donacionFix);
+            context.status(200).json(response);
+        } catch (Exception e) {
+            throw new BadRequestResponse("Error de solicitud.");
+        }
+
+    }
+
+    public void arreglarHeladera(Context context) {
+        try {
+            ColaboradorDTO colaboradorDTO = context.bodyAsClass(ColaboradorDTO.class);
+            Long colaboradorId = colaboradorDTO.getId();
+            this.fachada.registrarArreglo(colaboradorId);
+        } catch (Exception e) {
+            throw new BadRequestResponse("Error de solicitud.");
         }
     }
 }

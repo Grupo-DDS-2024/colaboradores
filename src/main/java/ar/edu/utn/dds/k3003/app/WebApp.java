@@ -61,6 +61,12 @@ public class WebApp {
         app.patch("/colaboradores/{colaboradorId}", colaboradorController::modificar);
         app.get("/colaboradores/{colaboradorId}/puntos", colaboradorController::puntos);
         app.put("/formula", colaboradorController::actualizarPesosPuntos);
+
+        // Para ello expondrá un endpoint a ser utilizado por este sistema de terceros. El mismo recibirá el monto, la fecha de acreditación
+        // y el colaboradorId. Esto influirá en el cálculo de puntos más adelante.
+        app.put("/donar", colaboradorController::recibirDonacion);
+        app.put("/arreglar", colaboradorController::arreglarHeladera);
+
         //app.delete("/colaboradores", colaboradorController::cleanUp);
 
     }

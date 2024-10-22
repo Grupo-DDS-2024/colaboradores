@@ -1,24 +1,15 @@
 package ar.edu.utn.dds.k3003.model;
 
 import ar.edu.utn.dds.k3003.facades.dtos.FormaDeColaborarEnum;
+import ar.edu.utn.dds.k3003.model.formaDeColaborar.FormaDeColaborar;
+import ar.edu.utn.dds.k3003.model.formaDeColaborar.Implementacion;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.eclipse.jetty.util.Uptime;
 
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.PreRemove;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,16 +31,33 @@ public class Colaborador {
     @Column(name = "nombre")
     private String nombre;
 
-    @ElementCollection(targetClass = FormaDeColaborarEnum.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "colaborador_formas", joinColumns = @JoinColumn(name = "colaborador_id"))
-    @Enumerated(EnumType.STRING)
-    @Column(name = "forma", nullable = false)
-    private List<FormaDeColaborarEnum> formas = new ArrayList<>();
+
+
+    @Getter
+    @Setter
+    //@ElementCollection
+    //@CollectionTable(name="formas de colaboradores",joinColumns = @JoinColumn(name="colaborador_id"))
+    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL},orphanRemoval = true)
+    @JoinColumn(name = "colaborador_id")
+    private List<Implementacion> formas = new ArrayList<>();
+
+
+    @Column(name= "cantHeladeras")
+    private Integer cantHeladerasReparadas;
+
+    public Colaborador(Long id, String nombre) {
+        this.id = id;
+        this.nombre = nombre;
+
+    }
 
     @PreRemove
     private void preRemove() {
         this.formas.clear();
     }
 
+    public void arreglarHeladera() {
+        this.cantHeladerasReparadas += 1;
+    }
 
 }
