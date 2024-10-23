@@ -3,6 +3,7 @@ package ar.edu.utn.dds.k3003.model.formaDeColaborar;
 import ar.edu.utn.dds.k3003.app.Fachada;
 import ar.edu.utn.dds.k3003.model.Donacion;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ public class DonadorDePesos implements FormaDeColaborar {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Setter
     @Transient
     double coeficiente = 0.5;
     @Transient

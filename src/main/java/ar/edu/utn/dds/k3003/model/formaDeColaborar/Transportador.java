@@ -3,6 +3,7 @@ package ar.edu.utn.dds.k3003.model.formaDeColaborar;
 import ar.edu.utn.dds.k3003.app.Fachada;
 import ar.edu.utn.dds.k3003.facades.FachadaLogistica;
 import ar.edu.utn.dds.k3003.facades.dtos.TrasladoDTO;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -16,6 +17,7 @@ public class Transportador implements FormaDeColaborar{
     private Long id;
     @Transient
     FachadaLogistica fachadaLogistica;
+    @Setter
     @Transient
     Double coeficiente = 1.0;
     @Transient

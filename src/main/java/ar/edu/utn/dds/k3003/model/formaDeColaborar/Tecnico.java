@@ -2,6 +2,7 @@ package ar.edu.utn.dds.k3003.model.formaDeColaborar;
 
 import ar.edu.utn.dds.k3003.app.Fachada;
 import ar.edu.utn.dds.k3003.facades.FachadaViandas;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -12,6 +13,7 @@ public class Tecnico implements FormaDeColaborar{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @Transient
     Double coeficiente = 5.0;
     @Transient

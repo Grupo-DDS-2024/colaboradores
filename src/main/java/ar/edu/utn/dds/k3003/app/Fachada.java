@@ -119,11 +119,20 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradore
 
     @Override
     public void actualizarPesosPuntos(Double pesosDonados, Double viandasDistribuidas, Double viandasDonadas, Double tarjetasRepartidas, Double heladerasActivas) {
-        coeficientesPuntos.setValor(TipoCoeficiente.PESOS_DONADOS, pesosDonados);
-        coeficientesPuntos.setValor(TipoCoeficiente.VIANDAS_DISTRIBUIDAS, viandasDistribuidas);
-        coeficientesPuntos.setValor(TipoCoeficiente.VIANDAS_DONADAS, viandasDonadas);
-        coeficientesPuntos.setValor(TipoCoeficiente.TARJETAS_REPARTIDAS, tarjetasRepartidas);
-        coeficientesPuntos.setValor(TipoCoeficiente.HELADERAS_ACTIVAS, heladerasActivas);
+
+        DonadorDePesos.getInstance(this).setCoeficiente(pesosDonados);
+        Transportador.getInstance(fachadaLogistica).setCoeficiente(viandasDistribuidas);
+        DonadorDeViandas.getInstance(fachadaViandas).setCoeficiente(viandasDonadas);
+        Tecnico.getInstance(this).setCoeficiente(heladerasActivas);
+
+
+        // Tarjetas repartidas ??
+//        coeficientesPuntos.setValor(TipoCoeficiente.PESOS_DONADOS, pesosDonados);
+//        coeficientesPuntos.setValor(TipoCoeficiente.VIANDAS_DISTRIBUIDAS, viandasDistribuidas);
+//        coeficientesPuntos.setValor(TipoCoeficiente.VIANDAS_DONADAS, viandasDonadas);
+//        coeficientesPuntos.setValor(TipoCoeficiente.TARJETAS_REPARTIDAS, tarjetasRepartidas);
+//        coeficientesPuntos.setValor(TipoCoeficiente.HELADERAS_ACTIVAS, heladerasActivas);
+
     }
 
     public long cantColaboradores() {
