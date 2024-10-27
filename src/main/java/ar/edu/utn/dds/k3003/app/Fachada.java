@@ -7,16 +7,15 @@ import ar.edu.utn.dds.k3003.facades.dtos.FormaDeColaborarEnum;
 
 import ar.edu.utn.dds.k3003.facades.dtos.TrasladoDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.ViandaDTO;
-import ar.edu.utn.dds.k3003.model.CoeficientesPuntos;
-import ar.edu.utn.dds.k3003.model.Colaborador;
-import ar.edu.utn.dds.k3003.model.Donacion;
-import ar.edu.utn.dds.k3003.model.TipoCoeficiente;
+import ar.edu.utn.dds.k3003.model.*;
 import ar.edu.utn.dds.k3003.model.formaDeColaborar.*;
 import ar.edu.utn.dds.k3003.repositories.ColaboradorMapper;
 import ar.edu.utn.dds.k3003.repositories.ColaboradorRepository;
 import ar.edu.utn.dds.k3003.repositories.DonacionesRepository;
+import ar.edu.utn.dds.k3003.repositories.SuscripcionRepository;
 import lombok.Getter;
 import org.eclipse.jetty.util.Uptime;
+import org.jetbrains.annotations.NotNull;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -40,6 +39,7 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradore
     private EntityManagerFactory entityManagerFactory;
 
     private DonacionesRepository donacionesRepository;
+    private SuscripcionRepository suscripcionRepository;
 
 //  public Fachada() {
 //    this.entityManagerFactory = Persistence.createEntityManagerFactory("defaultdb");
@@ -53,6 +53,7 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradore
         this.entityManagerFactory = entityManagerFactory;
         this.colaboradorRepository = new ColaboradorRepository(entityManagerFactory);
         this.donacionesRepository = new DonacionesRepository(entityManagerFactory);
+        this.suscripcionRepository = new SuscripcionRepository(entityManagerFactory);
     }
 
     public Fachada() {
@@ -105,18 +106,6 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradore
         // Mapear y devolver el colaborador actualizado como DTO
         return colaboradorMapper.map(colaborador);
     }
-
-
-//    public ColaboradorDTO modificar2(Long colaboradorId, List<FormaDeColaborarEnum> formas) throws NoSuchElementException {
-//        // Buscar el colaborador por ID
-//        Colaborador colaborador = this.colaboradorRepository.findById(colaboradorId);
-//        colaboradorRepository.update(colaborador, formas);
-//        // Mapear y devolver el colaborador actualizado como DTO
-//        return colaboradorMapper.map(colaborador);
-//    }
-
-
-
     @Override
     public void actualizarPesosPuntos(Double pesosDonados, Double viandasDistribuidas, Double viandasDonadas, Double tarjetasRepartidas, Double heladerasActivas) {
 
@@ -125,14 +114,28 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradore
         DonadorDeViandas.getInstance(fachadaViandas).setCoeficiente(viandasDonadas);
         Tecnico.getInstance(this).setCoeficiente(heladerasActivas);
 
+    }
 
-        // Tarjetas repartidas ??
-//        coeficientesPuntos.setValor(TipoCoeficiente.PESOS_DONADOS, pesosDonados);
-//        coeficientesPuntos.setValor(TipoCoeficiente.VIANDAS_DISTRIBUIDAS, viandasDistribuidas);
-//        coeficientesPuntos.setValor(TipoCoeficiente.VIANDAS_DONADAS, viandasDonadas);
-//        coeficientesPuntos.setValor(TipoCoeficiente.TARJETAS_REPARTIDAS, tarjetasRepartidas);
-//        coeficientesPuntos.setValor(TipoCoeficiente.HELADERAS_ACTIVAS, heladerasActivas);
+    public SuscripcionHeladera suscribirseAPocasViandas(Long colaborador_id, Long heladera_id, int cantMinimaViandas){
+        Colaborador colaborador = colaboradorRepository.findById(colaborador_id);
+        SuscripcionHeladera suscripcion = new SuscripcionHeladera(colaborador,heladera_id,cantMinimaViandas,-1,false);
+        this.suscripcionRepository.save(suscripcion);
+        colaborador.suscribirseAHeladera(suscripcion);
+        return suscripcion;
+    }
 
+    public void suscribirseAFaltanViandas(Long colaborador_id, Long heladera_id, int viandasDisponibles){
+        Colaborador colaborador = colaboradorRepository.findById(colaborador_id);
+        SuscripcionHeladera suscripcion = new SuscripcionHeladera(colaborador,heladera_id,-1,viandasDisponibles,false);
+        this.suscripcionRepository.save(suscripcion);
+        colaborador.suscribirseAHeladera(suscripcion);
+    }
+
+    public void suscribirseADesperfecto(Long colaborador_id, Long heladera_id){
+        Colaborador colaborador = colaboradorRepository.findById(colaborador_id);
+        SuscripcionHeladera suscripcion = new SuscripcionHeladera(colaborador,heladera_id,-1,-1,true);
+        this.suscripcionRepository.save(suscripcion);
+        colaborador.suscribirseAHeladera(suscripcion);
     }
 
     public long cantColaboradores() {
@@ -164,6 +167,14 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradore
 
     public int cantHeladerasReparadas(Long colaboradorId) {
         return this.colaboradorRepository.findById(colaboradorId).getCantHeladerasReparadas();
+    }
+
+    public void desuscribirse(Long suscripcionId){
+        this.suscripcionRepository.delete(suscripcionId);
+    }
+
+    public SuscripcionHeladera getSuscripcion(Long id){
+        return this.suscripcionRepository.findById(id);
     }
 
 }

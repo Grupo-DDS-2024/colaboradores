@@ -17,7 +17,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Colaborador {
+public class Colaborador  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,8 +35,14 @@ public class Colaborador {
     private List<FormaDeColaborarEnum> formas = new ArrayList<>();
 
 
+    @Transient
+    private List<SuscripcionHeladera> suscripciones = new ArrayList<>();
+
+
     @Column(name= "cantHeladeras")
     private Integer cantHeladerasReparadas;
+
+
 
     public Colaborador(Long id, String nombre) {
         this.id = id;
@@ -47,6 +53,10 @@ public class Colaborador {
     public Colaborador(String nombre, List<FormaDeColaborarEnum> formas) {
         this.nombre=nombre;
         this.formas=formas;
+    }
+
+    public void suscribirseAHeladera(SuscripcionHeladera suscripcion){
+        suscripciones.add(suscripcion);
     }
 
     @PreRemove

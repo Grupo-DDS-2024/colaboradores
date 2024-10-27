@@ -4,8 +4,6 @@ import ar.edu.utn.dds.k3003.clients.LogisticaProxy;
 import ar.edu.utn.dds.k3003.clients.ViandasProxy;
 import ar.edu.utn.dds.k3003.controller.ColaboradorController;
 import ar.edu.utn.dds.k3003.facades.dtos.Constants;
-import ar.edu.utn.dds.k3003.repositories.ColaboradorMapper;
-import ar.edu.utn.dds.k3003.repositories.ColaboradorRepository;
 import ar.edu.utn.dds.k3003.utils.DataDogsUtils;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -61,13 +59,15 @@ public class WebApp {
         app.patch("/colaboradores/{colaboradorId}", colaboradorController::modificar);
         app.get("/colaboradores/{colaboradorId}/puntos", colaboradorController::puntos);
         app.put("/formula", colaboradorController::actualizarPesosPuntos);
-
-        // Para ello expondrá un endpoint a ser utilizado por este sistema de terceros. El mismo recibirá el monto, la fecha de acreditación
-        // y el colaboradorId. Esto influirá en el cálculo de puntos más adelante.
         app.put("/donar", colaboradorController::recibirDonacion);
         app.put("/arreglar", colaboradorController::arreglarHeladera);
-
+        app.put("/colaboradores/{colaboradorId}/suscripcionAPocasViandas",colaboradorController::suscripcionAPocasViandas);
+        app.put("/colaboradores/{colaboradorId}/suscripcionAFaltanViandas",colaboradorController::suscripcionAFaltanViandas);
+        app.put("/colaboradores/{colaboradorId}/suscripcionADesperfecto",colaboradorController::suscripcionADesperfecto);
         //app.delete("/colaboradores", colaboradorController::cleanUp);
+
+        app.delete("/suscripcion/{id}",colaboradorController::desuscribirse);
+        app.get("/suscripcion/{id}",colaboradorController::getSuscripcion);
 
     }
 
