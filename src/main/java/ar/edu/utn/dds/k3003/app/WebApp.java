@@ -1,5 +1,6 @@
 package ar.edu.utn.dds.k3003.app;
 
+import ar.edu.utn.dds.k3003.clients.HeladeraProxy;
 import ar.edu.utn.dds.k3003.clients.LogisticaProxy;
 import ar.edu.utn.dds.k3003.clients.ViandasProxy;
 import ar.edu.utn.dds.k3003.controller.ColaboradorController;
@@ -32,6 +33,7 @@ public class WebApp {
         var objectMapper = createObjectMapper();
         fachada.setViandasProxy(new ViandasProxy(objectMapper));
         fachada.setLogisticaProxy(new LogisticaProxy(objectMapper));
+        fachada.setHeladeraProxy(new HeladeraProxy(objectMapper));
         var DDUtils = new DataDogsUtils("Colaboradores");
         var registro = DDUtils.getRegistro();
 

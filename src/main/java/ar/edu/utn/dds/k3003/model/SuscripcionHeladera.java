@@ -21,7 +21,7 @@ public class SuscripcionHeladera {
 
     @Column(name = "id_heladera")
     @NotNull
-    private Long heladera_id;
+    private int heladera_id;
     @Column
     private int cantMinimaViandas = -1;
     @Column
@@ -30,7 +30,7 @@ public class SuscripcionHeladera {
     private boolean notificarDesperfecto = false;
 
 
-    public SuscripcionHeladera(Colaborador colaborador, @NotNull Long heladera_id, int cantMinimaViandas, int viandasDisponible, boolean notificarDesperfecto) {
+    public SuscripcionHeladera(Colaborador colaborador, @NotNull int heladera_id, int cantMinimaViandas, int viandasDisponible, boolean notificarDesperfecto) {
         this.colaborador = colaborador;
         this.heladera_id = heladera_id;
         this.cantMinimaViandas = cantMinimaViandas;

@@ -5,5 +5,5 @@ import lombok.Getter;
 @Getter
 public class SuscripcionADesperfectoRequest {
     @Getter
-    private  Long heladera_id;
+    private  int heladera_id;
 }

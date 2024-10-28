@@ -7,5 +7,5 @@ public class SuscripcionCantViandasRequest {
     @Getter
     private int cantidadViandas;
     @Getter
-    private Long heladera_id;
+    private int heladera_id;
 }

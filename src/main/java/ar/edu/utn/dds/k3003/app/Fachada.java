@@ -1,12 +1,12 @@
 package ar.edu.utn.dds.k3003.app;
 
+import ar.edu.utn.dds.k3003.clients.FachadaHeladeras;
+import ar.edu.utn.dds.k3003.clients.HeladeraProxy;
 import ar.edu.utn.dds.k3003.facades.FachadaLogistica;
 import ar.edu.utn.dds.k3003.facades.FachadaViandas;
 import ar.edu.utn.dds.k3003.facades.dtos.ColaboradorDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.FormaDeColaborarEnum;
 
-import ar.edu.utn.dds.k3003.facades.dtos.TrasladoDTO;
-import ar.edu.utn.dds.k3003.facades.dtos.ViandaDTO;
 import ar.edu.utn.dds.k3003.model.*;
 import ar.edu.utn.dds.k3003.model.formaDeColaborar.*;
 import ar.edu.utn.dds.k3003.repositories.ColaboradorMapper;
@@ -14,16 +14,9 @@ import ar.edu.utn.dds.k3003.repositories.ColaboradorRepository;
 import ar.edu.utn.dds.k3003.repositories.DonacionesRepository;
 import ar.edu.utn.dds.k3003.repositories.SuscripcionRepository;
 import lombok.Getter;
-import org.eclipse.jetty.util.Uptime;
-import org.jetbrains.annotations.NotNull;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -36,6 +29,8 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradore
     private FachadaViandas fachadaViandas;
     @Getter
     private FachadaLogistica fachadaLogistica;
+    @Getter
+    private HeladeraProxy fachadaHeladeras;
     private EntityManagerFactory entityManagerFactory;
 
     private DonacionesRepository donacionesRepository;
@@ -116,26 +111,31 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradore
 
     }
 
-    public SuscripcionHeladera suscribirseAPocasViandas(Long colaborador_id, Long heladera_id, int cantMinimaViandas){
+    public SuscripcionHeladera suscribirseAPocasViandas(Long colaborador_id, int heladera_id, int cantMinimaViandas){
         Colaborador colaborador = colaboradorRepository.findById(colaborador_id);
         SuscripcionHeladera suscripcion = new SuscripcionHeladera(colaborador,heladera_id,cantMinimaViandas,-1,false);
         this.suscripcionRepository.save(suscripcion);
         colaborador.suscribirseAHeladera(suscripcion);
+
+        this.fachadaHeladeras.agregarSuscriptor(colaborador_id,heladera_id,cantMinimaViandas,-1,false);
+
         return suscripcion;
     }
 
-    public void suscribirseAFaltanViandas(Long colaborador_id, Long heladera_id, int viandasDisponibles){
+    public void suscribirseAFaltanViandas(Long colaborador_id, int heladera_id, int viandasDisponibles){
         Colaborador colaborador = colaboradorRepository.findById(colaborador_id);
         SuscripcionHeladera suscripcion = new SuscripcionHeladera(colaborador,heladera_id,-1,viandasDisponibles,false);
         this.suscripcionRepository.save(suscripcion);
         colaborador.suscribirseAHeladera(suscripcion);
+        this.fachadaHeladeras.agregarSuscriptor(colaborador_id,heladera_id,-1,viandasDisponibles,false);
     }
 
-    public void suscribirseADesperfecto(Long colaborador_id, Long heladera_id){
+    public void suscribirseADesperfecto(Long colaborador_id, int heladera_id){
         Colaborador colaborador = colaboradorRepository.findById(colaborador_id);
         SuscripcionHeladera suscripcion = new SuscripcionHeladera(colaborador,heladera_id,-1,-1,true);
         this.suscripcionRepository.save(suscripcion);
         colaborador.suscribirseAHeladera(suscripcion);
+        this.fachadaHeladeras.agregarSuscriptor(colaborador_id,heladera_id,-1,-1,true);
     }
 
     public long cantColaboradores() {
@@ -150,6 +150,9 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradore
     @Override
     public void setViandasProxy(FachadaViandas fachadaViandas) {
         this.fachadaViandas = fachadaViandas;
+    }
+    public void setHeladeraProxy(HeladeraProxy fachadaHeladeras){
+        this.fachadaHeladeras=fachadaHeladeras;
     }
 
     public void registrarDonacion(Donacion donacion) {
