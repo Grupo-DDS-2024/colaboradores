@@ -5,6 +5,7 @@ import javax.persistence.EntityManagerFactory;
 import java.io.IOException;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.*;
 
 public class ColaboradoresWorker extends DefaultConsumer {
@@ -22,12 +23,12 @@ public class ColaboradoresWorker extends DefaultConsumer {
     // Establecer la conexión con CloudAMQP
         Map<String, String> envMQ = System.getenv();
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost(envMQ.get("QUEUE_HOST"));
-        factory.setUsername(envMQ.get("QUEUE_USERNAME"));
-        factory.setPassword(envMQ.get("QUEUE_PASSWORD"));
+        factory.setHost(envMQ.get("NOTIFICACIONES_HOST"));
+        factory.setUsername(envMQ.get("NOTIFICACIONES_USERNAME"));
+        factory.setPassword(envMQ.get("NOTIFICACIONES_PASSWORD"));
         // En el plan más barato, el VHOST == USER
-        factory.setVirtualHost(envMQ.get("QUEUE_USERNAME"));
-        String queueName = envMQ.get("QUEUE_NAME");
+        factory.setVirtualHost(envMQ.get("NOTIFICACIONES_USERNAME"));
+        String queueName = envMQ.get("NOTIFICACIONES_NAME");
         Connection connection = factory.newConnection();
         com.rabbitmq.client.Channel channel = connection.createChannel();
 
@@ -49,13 +50,36 @@ public class ColaboradoresWorker extends DefaultConsumer {
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
         // Confirmar la recepción del mensaje a la mensajeria
         this.getChannel().basicAck(envelope.getDeliveryTag(), false);
-        String analisisId = new String(body, "UTF-8");
+        String mensaje = new String(body, "UTF-8");
+        //mensaje = mensaje.replace("=", ":").replace(", ", "\", \"").replace("{", "{\"").replace("}", "\"}");
+        mensaje = mensaje.replaceAll("([a-zA-Z_]+):", "\"$1\":").replaceAll(",\\s*", ", ").replace("=", ":"); // Cambia '=' por ':';
+        System.out.println("MENSAJE: " + mensaje);
+        // MENSAJE: {"tipo::0", "heladera_id::1", "colaborador_id::1"}
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            // Parseamos el mensaje a un Map
+            Map<String, Object> responseMap = objectMapper.readValue(mensaje, Map.class);
+
+            // Accedemos a los valores individuales
+            Integer tipo = (Integer) responseMap.get("tipo:");
+            Integer heladeraId = (Integer) responseMap.get("heladera_id:");
+            Long colaboradorId = (Long) responseMap.get("colaborador_id:");
+
+
+
+            // Usar los valores
+            System.out.println("colaborador_id: " + colaboradorId);
+            System.out.println("heladera_id: " + heladeraId);
+            System.out.println("tipo: " + tipo);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         /*
         String temp = analisisId.substring(analisisId.indexOf("TemperaturaDTO(") + "TemperaturaDTO(".length(), analisisId.length() - 2);
         String[] campos = temp.split(", ");
         int tempe = 0;
         int heladeriaId = 400;
-        LocalDateTime fecha = null;
         for (String campo : campos) {
             if (campo.startsWith("temperatura=")) {
                 tempe = Integer.parseInt(campo.split("=")[1]);
@@ -83,3 +107,15 @@ public class ColaboradoresWorker extends DefaultConsumer {
         */
     }
 }
+
+/*
+                Map<String, Object> response = new HashMap<>();
+                response.put("colaborador_id:",s.getColaborador_id());
+                response.put("heladera_id:",heladera_id);
+                response.put("tipo:", 0);
+
+                Map<String, Object> response = new HashMap<>();
+                response.put("colaborador_id:",s.getColaborador_id());
+                response.put("heladera_id:",heladera_id);
+                response.put("tipo:",1);
+ */

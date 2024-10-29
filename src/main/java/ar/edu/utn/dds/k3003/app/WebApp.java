@@ -10,22 +10,26 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 import io.javalin.Javalin;
 import io.javalin.json.JavalinJackson;
 import io.javalin.micrometer.MicrometerPlugin;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class WebApp {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, TimeoutException {
         var env = System.getenv();
 
         EntityManagerFactory entityManagerFactory = startEntityManagerFactory();
@@ -42,6 +46,22 @@ public class WebApp {
 
         // Config
         final var micrometerPlugin = new MicrometerPlugin(config -> config.registry = registro);
+
+        Map<String, String> envMQ = System.getenv();
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost(envMQ.get("NOTIFICACIONES_HOST"));
+        factory.setUsername(envMQ.get("NOTIFICACIONES_USERNAME"));
+        factory.setPassword(envMQ.get("NOTIFICACIONES_PASSWORD"));
+        // En el plan más barato, el VHOST == USER
+        factory.setVirtualHost(envMQ.get("NOTIFICACIONES_USERNAME"));
+        String queueName = envMQ.get("NOTIFICACIONES_NAME");
+        Connection connection = factory.newConnection();
+        com.rabbitmq.client.Channel channel = connection.createChannel();
+
+        EntityManagerFactory entityManagerFactory2 = WebApp.startEntityManagerFactory();
+
+        ColaboradoresWorker worker = new ColaboradoresWorker(channel, queueName, entityManagerFactory2);
+        worker.init();
 
         var port = Integer.parseInt(env.getOrDefault("PORT", "8082"));
 

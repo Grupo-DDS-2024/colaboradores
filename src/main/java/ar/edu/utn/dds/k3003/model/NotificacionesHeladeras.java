@@ -15,10 +15,15 @@ public class NotificacionesHeladeras {
     private  Long colaborador_id;
 
     @Column
-    private Long heladera_id;
+    private int heladera_id;
 
     @Enumerated
     private TipoNotificacionEnum tipo;
 
+    public NotificacionesHeladeras(Long colaborador_id, int heladera_id, TipoNotificacionEnum tipo){
+        this.colaborador_id=colaborador_id;
+        this.heladera_id=heladera_id;
+        this.tipo=tipo;
+    }
 
 }
