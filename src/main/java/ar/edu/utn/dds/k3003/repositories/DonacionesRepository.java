@@ -1,13 +1,12 @@
 package ar.edu.utn.dds.k3003.repositories;
 
-import ar.edu.utn.dds.k3003.model.Donacion;
+import ar.edu.utn.dds.k3003.model.Clases.Donacion;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 

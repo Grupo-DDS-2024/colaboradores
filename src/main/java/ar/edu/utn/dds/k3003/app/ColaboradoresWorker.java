@@ -1,9 +1,8 @@
 package ar.edu.utn.dds.k3003.app;
 
-import ar.edu.utn.dds.k3003.model.NotificacionesHeladeras;
-import ar.edu.utn.dds.k3003.model.TipoNotificacionEnum;
+import ar.edu.utn.dds.k3003.model.Clases.NotificacionesHeladeras;
+import ar.edu.utn.dds.k3003.model.Enums.TipoNotificacionEnum;
 import ar.edu.utn.dds.k3003.repositories.NotificacionRepository;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.*;
 
 import javax.persistence.EntityManagerFactory;
@@ -73,47 +72,6 @@ public class ColaboradoresWorker extends DefaultConsumer {
         repo.save(notificacionesHeladeras);
 
 
-        /*
-        String temp = analisisId.substring(analisisId.indexOf("TemperaturaDTO(") + "TemperaturaDTO(".length(), analisisId.length() - 2);
-        String[] campos = temp.split(", ");
-        int tempe = 0;
-        int heladeriaId = 400;
-        for (String campo : campos) {
-            if (campo.startsWith("temperatura=")) {
-                tempe = Integer.parseInt(campo.split("=")[1]);
-            }
-            if (campo.startsWith("heladeraId=")) {
-                heladeriaId = Integer.parseInt(campo.split("=")[1]);
-            }
-            if (campo.startsWith("fechaMedicion=")) {
-                fecha = LocalDateTime.parse(campo.split("=")[1]);
-            }
-        }
 
-
-        System.out.println("id");
-        System.out.println(heladeriaId);
-        Temperatura temperatura = new Temperatura(tempe, heladeriaId, fecha);
-        EntityManager entityManager = entityManagerFactory.createEntityManager();
-        entityManager.getTransaction().begin();
-        HeladeraJPARepository repositorio = new HeladeraJPARepository(entityManager);
-        Heladera heladera = repositorio.findById(heladeriaId);
-        heladera.setTemperatura(temperatura);
-        repositorio.save(heladera); //dsp cambiarlo a update
-        entityManager.getTransaction().commit();
-        entityManager.close();
-        */
     }
 }
-
-/*
-                Map<String, Object> response = new HashMap<>();
-                response.put("colaborador_id:",s.getColaborador_id());
-                response.put("heladera_id:",heladera_id);
-                response.put("tipo:", 0);
-
-                Map<String, Object> response = new HashMap<>();
-                response.put("colaborador_id:",s.getColaborador_id());
-                response.put("heladera_id:",heladera_id);
-                response.put("tipo:",1);
- */

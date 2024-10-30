@@ -1,8 +1,8 @@
 package ar.edu.utn.dds.k3003.repositories;
 
-import ar.edu.utn.dds.k3003.facades.dtos.FormaDeColaborarEnum;
-import ar.edu.utn.dds.k3003.model.Colaborador;
-import ar.edu.utn.dds.k3003.model.formaDeColaborar.FormaDeColaborar;
+
+import ar.edu.utn.dds.k3003.model.Clases.Colaborador;
+import ar.edu.utn.dds.k3003.model.formaDeColaborar.FormaDeColaborarActualizadoEnum;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
@@ -54,7 +54,7 @@ public class ColaboradorRepository {
 
     }
 
-    public void update(Colaborador colaborador, List<FormaDeColaborarEnum> formas) {
+    public void update(Colaborador colaborador, List<FormaDeColaborarActualizadoEnum> formas) {
         EntityManager entityManager = this.entityManagerFactory.createEntityManager();
         entityManager.getTransaction().begin();
         colaborador.setFormas(formas);

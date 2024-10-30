@@ -2,10 +2,12 @@ package ar.edu.utn.dds.k3003.controller;
 
 import ar.edu.utn.dds.k3003.app.Fachada;
 import ar.edu.utn.dds.k3003.facades.dtos.ColaboradorDTO;
-import ar.edu.utn.dds.k3003.facades.dtos.FormaDeColaborarEnum;
-import ar.edu.utn.dds.k3003.model.*;
-import ar.edu.utn.dds.k3003.model.formaDeColaborar.DonadorDeViandas;
-import ar.edu.utn.dds.k3003.model.formaDeColaborar.Transportador;
+
+import ar.edu.utn.dds.k3003.model.Clases.Donacion;
+import ar.edu.utn.dds.k3003.model.Clases.SuscripcionHeladera;
+import ar.edu.utn.dds.k3003.model.DTOs.ColaboradorDTOActualizado;
+import ar.edu.utn.dds.k3003.model.Request.*;
+import ar.edu.utn.dds.k3003.model.formaDeColaborar.FormaDeColaborarActualizadoEnum;
 import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
@@ -33,8 +35,8 @@ public class ColaboradorController {
 
     public void agregar(Context context) {
         try {
-            var colaboradorDTO = context.bodyAsClass(ColaboradorDTO.class);
-            var colaboradorDTORta = this.fachada.agregar(colaboradorDTO);
+            var colaboradorDTOActualizado = context.bodyAsClass(ColaboradorDTOActualizado.class);
+            var colaboradorDTORta = this.fachada.agregar(colaboradorDTOActualizado);
             contadorColaboradores.increment();
             context.json(colaboradorDTORta);
             context.status(HttpStatus.CREATED);
@@ -46,7 +48,7 @@ public class ColaboradorController {
 
     public void modificar(Context context) {
         var id = context.pathParamAsClass("colaboradorId", Long.class).get();
-        List<FormaDeColaborarEnum> formas = context.bodyAsClass(UpdateFormasColaborarRequest.class).getFormas();
+        List<FormaDeColaborarActualizadoEnum> formas = context.bodyAsClass(UpdateFormasColaborarRequest.class).getFormas();
         try{
             var colaboradorDTO = this.fachada.modificar(id, formas);
             context.json(colaboradorDTO);
@@ -122,10 +124,10 @@ public class ColaboradorController {
     }
 
     public void arreglarHeladera(Context context) {
+        var colaboradorId = context.pathParamAsClass("colaborador_id", Long.class).get();
+        int heladeraId = context.bodyAsClass(ArreglarHeladeraRequest.class).getHeladera_id();
         try {
-            ColaboradorDTO colaboradorDTO = context.bodyAsClass(ColaboradorDTO.class);
-            Long colaboradorId = colaboradorDTO.getId();
-            this.fachada.registrarArreglo(colaboradorId);
+            this.fachada.registrarArreglo(colaboradorId, heladeraId);
             Map<String, Object> response = new HashMap<>();
             response.put("Mensaje", "Heladera arreglada correctametne");
             context.status(200).json(response);
@@ -197,6 +199,17 @@ public class ColaboradorController {
             Map<String, Object> response = new HashMap<>();
             response.put("Mensaje", "Donación registrada correctamente");
             response.put("Suscripcion", suscripcionHeladera);
+            context.status(200).json(response);
+        }catch (Exception e){
+            throw new BadRequestResponse("Error de solicitud.");
+        }
+    }
+    public void reportarFalla(Context context){
+        var id = context.pathParamAsClass("id",Integer.class).get();
+        try {
+            this.fachada.reportarFalla(id);
+            Map<String, Object> response = new HashMap<>();
+            response.put("Mensaje", "Falla reportada correctamente");
             context.status(200).json(response);
         }catch (Exception e){
             throw new BadRequestResponse("Error de solicitud.");

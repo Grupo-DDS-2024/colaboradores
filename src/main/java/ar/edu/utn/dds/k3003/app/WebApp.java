@@ -63,6 +63,20 @@ public class WebApp {
         ColaboradoresWorker worker = new ColaboradoresWorker(channel, queueName, entityManagerFactory2);
         worker.init();
 
+        Map<String, String> envIncidente = System.getenv();
+        ConnectionFactory factoryIncidente = new ConnectionFactory();
+        factoryIncidente.setHost(envIncidente.get("NOTIFICACIONES_HOST"));
+        factoryIncidente.setUsername(envIncidente.get("NOTIFICACIONES_USERNAME"));
+        factoryIncidente.setPassword(envIncidente.get("NOTIFICACIONES_PASSWORD"));
+        // En el plan más barato, el VHOST == USER
+        factoryIncidente.setVirtualHost(envIncidente.get("NOTIFICACIONES_USERNAME"));
+        String colaIncidente = envIncidente.get("INCIDENTES_NAME");
+        Connection conexionIncidente = factoryIncidente.newConnection();
+        com.rabbitmq.client.Channel canalIncidente = conexionIncidente.createChannel();
+
+        IncidentesWorker workerIncidentes = new IncidentesWorker(canalIncidente,colaIncidente,fachada);
+        workerIncidentes.init();
+
         var port = Integer.parseInt(env.getOrDefault("PORT", "8082"));
 
         var app = Javalin.create(config -> {
@@ -90,7 +104,8 @@ public class WebApp {
 
         app.delete("/suscripcion/{id}",colaboradorController::desuscribirse);
         app.get("/suscripcion/{id}",colaboradorController::getSuscripcion);
-
+        app.post("/reportar_heladera/{id}", colaboradorController::reportarFalla);
+        app.post("/arreglar_heladera/{id}", colaboradorController::arreglarHeladera);
     }
 
     public static ObjectMapper createObjectMapper() {

@@ -1,8 +1,6 @@
 package ar.edu.utn.dds.k3003.repositories;
 
-import ar.edu.utn.dds.k3003.model.Colaborador;
-import ar.edu.utn.dds.k3003.model.Donacion;
-import ar.edu.utn.dds.k3003.model.SuscripcionHeladera;
+import ar.edu.utn.dds.k3003.model.Clases.SuscripcionHeladera;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;

@@ -1,7 +1,6 @@
 package ar.edu.utn.dds.k3003.repositories;
 
-import ar.edu.utn.dds.k3003.model.NotificacionesHeladeras;
-import ar.edu.utn.dds.k3003.model.SuscripcionHeladera;
+import ar.edu.utn.dds.k3003.model.Clases.NotificacionesHeladeras;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;

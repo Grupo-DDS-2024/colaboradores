@@ -1,26 +1,25 @@
 package ar.edu.utn.dds.k3003.app;
 
-import ar.edu.utn.dds.k3003.clients.FachadaHeladeras;
 import ar.edu.utn.dds.k3003.clients.HeladeraProxy;
+import ar.edu.utn.dds.k3003.facades.dtos.FormaDeColaborarEnum;
+import ar.edu.utn.dds.k3003.model.Clases.*;
+import ar.edu.utn.dds.k3003.model.Enums.TipoIncidenteEnum;
+import ar.edu.utn.dds.k3003.model.FachadaColaboradores;
 import ar.edu.utn.dds.k3003.facades.FachadaLogistica;
 import ar.edu.utn.dds.k3003.facades.FachadaViandas;
-import ar.edu.utn.dds.k3003.facades.dtos.ColaboradorDTO;
-import ar.edu.utn.dds.k3003.facades.dtos.FormaDeColaborarEnum;
-
-import ar.edu.utn.dds.k3003.model.*;
+import ar.edu.utn.dds.k3003.model.DTOs.ColaboradorDTOActualizado;
+import ar.edu.utn.dds.k3003.model.formaDeColaborar.FormaDeColaborarActualizadoEnum;
 import ar.edu.utn.dds.k3003.model.formaDeColaborar.*;
-import ar.edu.utn.dds.k3003.repositories.ColaboradorMapper;
-import ar.edu.utn.dds.k3003.repositories.ColaboradorRepository;
-import ar.edu.utn.dds.k3003.repositories.DonacionesRepository;
-import ar.edu.utn.dds.k3003.repositories.SuscripcionRepository;
+import ar.edu.utn.dds.k3003.repositories.*;
 import lombok.Getter;
 
 import javax.persistence.EntityManagerFactory;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradores {
+public class Fachada implements FachadaColaboradores {
     @Getter
     private ColaboradorRepository colaboradorRepository;
     private ColaboradorMapper colaboradorMapper = new ColaboradorMapper();
@@ -35,6 +34,7 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradore
 
     private DonacionesRepository donacionesRepository;
     private SuscripcionRepository suscripcionRepository;
+    private IncidentesRepository incidentesRepository;
 
 //  public Fachada() {
 //    this.entityManagerFactory = Persistence.createEntityManagerFactory("defaultdb");
@@ -49,6 +49,7 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradore
         this.colaboradorRepository = new ColaboradorRepository(entityManagerFactory);
         this.donacionesRepository = new DonacionesRepository(entityManagerFactory);
         this.suscripcionRepository = new SuscripcionRepository(entityManagerFactory);
+        this.incidentesRepository= new IncidentesRepository(entityManagerFactory);
     }
 
     public Fachada() {
@@ -57,14 +58,14 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradore
 
 
     @Override
-    public ColaboradorDTO agregar(ColaboradorDTO colaboradorDTO) {
-        Colaborador colaborador = new Colaborador(colaboradorDTO.getNombre(), colaboradorDTO.getFormas());
+    public ColaboradorDTOActualizado agregar(ColaboradorDTOActualizado colaboradorDTOActualizado) {
+        Colaborador colaborador = new Colaborador(colaboradorDTOActualizado.getNombre(), colaboradorDTOActualizado.getFormas());
         colaborador = this.colaboradorRepository.save(colaborador);
         return colaboradorMapper.map(colaborador);
     }
 
     @Override
-    public ColaboradorDTO buscarXId(Long colaboradorId) throws NoSuchElementException {
+    public ColaboradorDTOActualizado buscarXId(Long colaboradorId) throws NoSuchElementException {
         Colaborador colaborador = this.colaboradorRepository.findById(colaboradorId);
         return colaboradorMapper.map(colaborador);
     }
@@ -73,9 +74,9 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradore
     @Override
     public Double puntos(Long colaboradorId) throws NoSuchElementException {
         Colaborador colaborador = this.colaboradorRepository.findById(colaboradorId);
-        List<FormaDeColaborarEnum> formasDeColaborar = colaborador.getFormas();
+        List<FormaDeColaborarActualizadoEnum> formasDeColaborar = colaborador.getFormas();
         List<FormaDeColaborar> colaboraciones = new ArrayList<>();
-        for (FormaDeColaborarEnum forma:formasDeColaborar){
+        for (FormaDeColaborarActualizadoEnum forma:formasDeColaborar){
             switch (forma){
                 case DONADOR:
                     colaboraciones.add(DonadorDeViandas.getInstance(this.fachadaViandas));
@@ -91,10 +92,8 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradore
         return colaboraciones.stream().mapToDouble(forma -> forma.calcularPuntos(colaboradorId)).sum();
     }
 
-
-
     @Override
-    public ColaboradorDTO modificar(Long colaboradorId, List<FormaDeColaborarEnum> formas) throws NoSuchElementException {
+    public ColaboradorDTOActualizado modificar(Long colaboradorId, List<FormaDeColaborarActualizadoEnum> formas) throws NoSuchElementException {
         // Buscar el colaborador por ID
         Colaborador colaborador = this.colaboradorRepository.findById(colaboradorId);
         colaboradorRepository.update(colaborador,formas);
@@ -162,10 +161,15 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradore
         return this.donacionesRepository.donacionesDelMes(mesActual,anioActual,colaboradorId);
     }
 
-    public void registrarArreglo(Long colaboradorId) {
+    public void registrarArreglo(Long colaboradorId, Integer heladera_id) {
         Colaborador colaborador = this.colaboradorRepository.findById(colaboradorId);
+        if(!colaborador.getFormas().contains(FormaDeColaborarActualizadoEnum.TECNICO)){
+            throw new IllegalArgumentException("El colaborador no es técnico");
+        }
         colaborador.arreglarHeladera();
         colaboradorRepository.save(colaborador);
+
+
     }
 
     public int cantHeladerasReparadas(Long colaboradorId) {
@@ -178,6 +182,14 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradore
 
     public SuscripcionHeladera getSuscripcion(Long id){
         return this.suscripcionRepository.findById(id);
+    }
+
+    public void reportarFalla(Integer heladeraId) {
+        this.fachadaHeladeras.reportarDesperfecto(heladeraId);
+    }
+    public void registrarIncidente(int heladera_id, TipoIncidenteEnum tipo){
+        Incidentes incidentes = new Incidentes(heladera_id, LocalDateTime.now(),tipo);
+        this.incidentesRepository.save(incidentes);
     }
 
 }
