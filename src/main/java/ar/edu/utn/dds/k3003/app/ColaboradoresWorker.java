@@ -1,12 +1,15 @@
 package ar.edu.utn.dds.k3003.app;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import java.io.IOException;
-import java.util.Map;
-
+import ar.edu.utn.dds.k3003.model.NotificacionesHeladeras;
+import ar.edu.utn.dds.k3003.model.TipoNotificacionEnum;
+import ar.edu.utn.dds.k3003.repositories.NotificacionRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.*;
+
+import javax.persistence.EntityManagerFactory;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ColaboradoresWorker extends DefaultConsumer {
 
@@ -51,29 +54,24 @@ public class ColaboradoresWorker extends DefaultConsumer {
         // Confirmar la recepción del mensaje a la mensajeria
         this.getChannel().basicAck(envelope.getDeliveryTag(), false);
         String mensaje = new String(body, "UTF-8");
-        //mensaje = mensaje.replace("=", ":").replace(", ", "\", \"").replace("{", "{\"").replace("}", "\"}");
-        mensaje = mensaje.replaceAll("([a-zA-Z_]+):", "\"$1\":").replaceAll(",\\s*", ", ").replace("=", ":"); // Cambia '=' por ':';
-        System.out.println("MENSAJE: " + mensaje);
-        // MENSAJE: {"tipo::0", "heladera_id::1", "colaborador_id::1"}
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            // Parseamos el mensaje a un Map
-            Map<String, Object> responseMap = objectMapper.readValue(mensaje, Map.class);
-
-            // Accedemos a los valores individuales
-            Integer tipo = (Integer) responseMap.get("tipo:");
-            Integer heladeraId = (Integer) responseMap.get("heladera_id:");
-            Long colaboradorId = (Long) responseMap.get("colaborador_id:");
-
-
-
-            // Usar los valores
-            System.out.println("colaborador_id: " + colaboradorId);
-            System.out.println("heladera_id: " + heladeraId);
-            System.out.println("tipo: " + tipo);
-        } catch (Exception e) {
-            e.printStackTrace();
+        System.out.println(mensaje);
+        mensaje = mensaje.substring(1,mensaje.length() - 1);
+        Map<String,String> valores = new HashMap<>();
+        String[] partes = mensaje.split(", ");
+        for (String parte:partes){
+            String[] claveValor = parte.split("=");
+            if(claveValor.length == 2){
+                valores.put(claveValor[0],claveValor[1]);
+            }
         }
+        Long colaboradorId = Long.parseLong(valores.get("colaborador_id"));
+        TipoNotificacionEnum tipo = TipoNotificacionEnum.buscarEnum(Integer.parseInt(valores.get("tipo")));
+        int heladeraId = Integer.parseInt(valores.get("heladera_id"));
+
+        NotificacionRepository repo = new NotificacionRepository(entityManagerFactory);
+        NotificacionesHeladeras notificacionesHeladeras = new NotificacionesHeladeras(colaboradorId,heladeraId,tipo);
+        repo.save(notificacionesHeladeras);
+
 
         /*
         String temp = analisisId.substring(analisisId.indexOf("TemperaturaDTO(") + "TemperaturaDTO(".length(), analisisId.length() - 2);

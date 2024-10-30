@@ -34,6 +34,11 @@ public class Colaborador  {
     @Column(name = "forma",nullable = false)
     private List<FormaDeColaborarEnum> formas = new ArrayList<>();
 
+    @OneToMany(cascade = {CascadeType.ALL},fetch = FetchType.LAZY)
+    @JoinColumn(name = "colaborador_id")
+    @Getter
+    private List<NotificacionesHeladeras> notificaciones = new ArrayList<>();
+
 
     @Transient
     private List<SuscripcionHeladera> suscripciones = new ArrayList<>();
