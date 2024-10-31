@@ -46,6 +46,6 @@ public class DonadorDePesos implements FormaDeColaborar {
         Integer mesActual = LocalDateTime.now().getMonthValue();
         Integer anioActual = LocalDateTime.now().getYear();
         List<Donacion> donaciones = colaboradorInstancia.donacionesDelMes(mesActual,anioActual,colaboradorId);
-        return donaciones.stream().mapToDouble(Donacion::getMonto).sum();
+        return donaciones.stream().mapToDouble(Donacion::getMonto).sum() * coeficiente;
     }
 }

@@ -54,14 +54,14 @@ public class IncidentesWorker extends DefaultConsumer {
         System.out.println(mensaje);
         mensaje = mensaje.substring(1,mensaje.length() - 1);
         Map<String,String> valores = new HashMap<>();
-        String[] partes = mensaje.split(",");
+        String[] partes = mensaje.split(", ");
         for (String parte:partes){
             String[] claveValor = parte.split("=");
             if(claveValor.length == 2){
                 valores.put(claveValor[0],claveValor[1]);
             }
         }
-        // REPOINCIDENTES FIND BY ID
+
         int heladeraId = Integer.parseInt(valores.get("heladera_id"));
         TipoIncidenteEnum tipo = TipoIncidenteEnum.buscarEnum(Integer.parseInt(valores.get("tipo")));
         this.fachada.registrarIncidente(heladeraId,tipo, EstadoIncidenteEnum.NO_REPARADO);

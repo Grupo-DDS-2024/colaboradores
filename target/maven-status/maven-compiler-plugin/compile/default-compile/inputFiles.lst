@@ -1,17 +1,44 @@
-D:\facultad\Diseño de Sistemas\tp grupal\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\CoeficientesPuntos.java
-D:\facultad\Diseño de Sistemas\tp grupal\colaboradores\src\main\java\ar\edu\utn\dds\k3003\app\Fachada.java
-D:\facultad\Diseño de Sistemas\tp grupal\colaboradores\src\main\java\ar\edu\utn\dds\k3003\clients\LogisticaRetrofitClient.java
-D:\facultad\Diseño de Sistemas\tp grupal\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\Colaborador.java
-D:\facultad\Diseño de Sistemas\tp grupal\colaboradores\src\main\java\ar\edu\utn\dds\k3003\utils\DataDogsUtils.java
-D:\facultad\Diseño de Sistemas\tp grupal\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\TipoCoeficiente.java
-D:\facultad\Diseño de Sistemas\tp grupal\colaboradores\src\main\java\ar\edu\utn\dds\k3003\repositories\ColaboradorRepository.java
-D:\facultad\Diseño de Sistemas\tp grupal\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\UpdateFormasColaborarRequest.java
-D:\facultad\Diseño de Sistemas\tp grupal\colaboradores\src\main\java\ar\edu\utn\dds\k3003\clients\ViandasProxy.java
-D:\facultad\Diseño de Sistemas\tp grupal\colaboradores\src\main\java\ar\edu\utn\dds\k3003\clients\ViandasRetrofitClient.java
-D:\facultad\Diseño de Sistemas\tp grupal\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\UpdatePesosPuntosRequest.java
-D:\facultad\Diseño de Sistemas\tp grupal\colaboradores\src\main\java\ar\edu\utn\dds\k3003\app\WebApp.java
-D:\facultad\Diseño de Sistemas\tp grupal\colaboradores\src\main\java\ar\edu\utn\dds\k3003\clients\LogisticaProxy.java
-D:\facultad\Diseño de Sistemas\tp grupal\colaboradores\src\main\java\ar\edu\utn\dds\k3003\controller\ColaboradorController.java
-D:\facultad\Diseño de Sistemas\tp grupal\colaboradores\src\main\java\ar\edu\utn\dds\k3003\repositories\ColaboradorMapper.java
-D:\facultad\Diseño de Sistemas\tp grupal\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\exceptions\SomeDomainException.java
-D:\facultad\Diseño de Sistemas\tp grupal\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\SomeDomainObject.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\Request\SuscripcionADesperfectoRequest.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\exceptions\SomeDomainException.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\Clases\Donacion.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\repositories\ColaboradorMapper.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\app\ColaboradoresWorker.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\repositories\DonacionesRepository.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\Request\ArreglarHeladeraRequest.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\formaDeColaborar\Transportador.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\Request\UpdateFormasColaborarRequest.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\Clases\CoeficientesPuntos.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\FachadaColaboradores.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\clients\HeladeraProxy.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\Clases\SuscripcionHeladera.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\app\WebApp.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\formaDeColaborar\FormaDeColaborarActualizadoEnum.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\SomeDomainObject.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\clients\HeladeraRetrofitClient.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\formaDeColaborar\DonadorDePesos.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\Clases\NotificacionesHeladeras.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\app\Fachada.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\clients\ViandasRetrofitClient.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\Request\SuscripcionCantViandasRequest.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\utils\DataDogsUtils.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\repositories\SuscripcionRepository.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\app\IncidentesWorker.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\Clases\Colaborador.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\DTOs\ColaboradorDTOActualizado.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\Enums\EstadoIncidenteEnum.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\Enums\TipoCoeficienteEnum.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\DTOs\ColaboradoresSuscritosDTO.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\formaDeColaborar\FormaDeColaborar.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\repositories\NotificacionRepository.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\clients\LogisticaRetrofitClient.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\Clases\Incidentes.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\formaDeColaborar\Tecnico.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\Enums\TipoNotificacionEnum.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\clients\LogisticaProxy.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\controller\ColaboradorController.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\Enums\TipoIncidenteEnum.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\repositories\IncidentesRepository.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\repositories\ColaboradorRepository.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\formaDeColaborar\DonadorDeViandas.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\clients\ViandasProxy.java
+C:\Users\feder\Desktop\tp-dds\colaboradores\src\main\java\ar\edu\utn\dds\k3003\model\Request\UpdatePesosPuntosRequest.java

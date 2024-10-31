@@ -161,10 +161,16 @@ public class Fachada implements FachadaColaboradores {
         this.fachadaHeladeras=fachadaHeladeras;
     }
 
-    public void registrarDonacion(Donacion donacion) {
+    public void registrarDonacion(Donacion donacion) { // habria q chequear si el colaboradorId no existe
+        try {
+            this.colaboradorRepository.findById(donacion.getColaboradorId());
+        } catch (Exception e) {
+            throw new IllegalArgumentException();
+        }
         this.donacionesRepository.save(donacion);
     }
     public List<Donacion> donacionesDelMes(int mesActual, int anioActual, Long colaboradorId){
+
         return this.donacionesRepository.donacionesDelMes(mesActual,anioActual,colaboradorId);
     }
 
@@ -181,9 +187,6 @@ public class Fachada implements FachadaColaboradores {
         colaboradorRepository.save(colaborador);
         incidentes.cambiarEstado(EstadoIncidenteEnum.ARREGLADO);
         incidentesRepository.save(incidentes);
-
-
-
     }
 
     public int cantHeladerasReparadas(Long colaboradorId) {

@@ -117,6 +117,9 @@ public class ColaboradorController {
             response.put("Donación", donacionFix);
             this.fachada.registrarDonacion(donacionFix);
             context.status(200).json(response);
+
+        } catch (IllegalArgumentException e1){
+            throw new BadRequestResponse("El ID del Colaborador no existe.");
         } catch (Exception e) {
             throw new BadRequestResponse("Error de solicitud.");
         }

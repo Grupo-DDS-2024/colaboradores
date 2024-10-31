@@ -40,9 +40,10 @@ public class DonacionesRepository {
         CriteriaQuery<Donacion> cq = cb.createQuery(Donacion.class);
         Root<Donacion> donacion = cq.from(Donacion.class);
         cq.select(donacion);
+        List<Donacion> donaciones = entityManager.createQuery(cq).getResultList();
         entityManager.getTransaction().commit();
         entityManager.close();
-        return entityManager.createQuery(cq).getResultList();
+        return donaciones;
     }
     public List<Donacion> donacionesDelMes(Integer mesActual, Integer anioActual,Long colaboradorId){
         EntityManager entityManager = entityManagerFactory.createEntityManager();
