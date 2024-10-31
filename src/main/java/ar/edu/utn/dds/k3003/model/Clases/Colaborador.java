@@ -45,7 +45,7 @@ public class Colaborador  {
 
 
     @Column(name= "cantHeladeras")
-    private Integer cantHeladerasReparadas;
+    private Integer cantHeladerasReparadas=0;
 
 
 

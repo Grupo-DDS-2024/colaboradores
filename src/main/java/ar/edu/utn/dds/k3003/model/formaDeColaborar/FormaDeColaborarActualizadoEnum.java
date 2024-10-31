@@ -1,9 +1,10 @@
 package ar.edu.utn.dds.k3003.model.formaDeColaborar;
 
 public enum FormaDeColaborarActualizadoEnum {
-    DONADOR,
+    DONADOR_VIANDAS,
     TECNICO,
-    TRANSPORTADOR;
+    TRANSPORTADOR,
+    DONADOR_DINERO;
 
     private FormaDeColaborarActualizadoEnum() {
     }

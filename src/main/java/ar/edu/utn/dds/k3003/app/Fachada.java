@@ -3,6 +3,7 @@ package ar.edu.utn.dds.k3003.app;
 import ar.edu.utn.dds.k3003.clients.HeladeraProxy;
 import ar.edu.utn.dds.k3003.facades.dtos.FormaDeColaborarEnum;
 import ar.edu.utn.dds.k3003.model.Clases.*;
+import ar.edu.utn.dds.k3003.model.Enums.EstadoIncidenteEnum;
 import ar.edu.utn.dds.k3003.model.Enums.TipoIncidenteEnum;
 import ar.edu.utn.dds.k3003.model.FachadaColaboradores;
 import ar.edu.utn.dds.k3003.facades.FachadaLogistica;
@@ -78,11 +79,17 @@ public class Fachada implements FachadaColaboradores {
         List<FormaDeColaborar> colaboraciones = new ArrayList<>();
         for (FormaDeColaborarActualizadoEnum forma:formasDeColaborar){
             switch (forma){
-                case DONADOR:
+                case DONADOR_VIANDAS:
                     colaboraciones.add(DonadorDeViandas.getInstance(this.fachadaViandas));
                     break;
                 case TRANSPORTADOR:
                     colaboraciones.add(Transportador.getInstance(this.fachadaLogistica));
+                    break;
+                case TECNICO:
+                    colaboraciones.add(Tecnico.getInstance(this));
+                    break;
+                case DONADOR_DINERO:
+                    colaboraciones.add(DonadorDePesos.getInstance(this));
                     break;
                 default:
                     throw new IllegalArgumentException("Forma de colaborar desconocida");
@@ -161,13 +168,20 @@ public class Fachada implements FachadaColaboradores {
         return this.donacionesRepository.donacionesDelMes(mesActual,anioActual,colaboradorId);
     }
 
-    public void registrarArreglo(Long colaboradorId, Integer heladera_id) {
+    public void registrarArreglo(Long incidente_id,Long colaboradorId, Integer heladera_id) {
         Colaborador colaborador = this.colaboradorRepository.findById(colaboradorId);
+        Incidentes incidentes  = incidentesRepository.findById(incidente_id);
+        if(incidentes.getEstado() == EstadoIncidenteEnum.ARREGLADO){
+            throw new IllegalArgumentException("El incidente ya fue solucionado");
+        }
         if(!colaborador.getFormas().contains(FormaDeColaborarActualizadoEnum.TECNICO)){
             throw new IllegalArgumentException("El colaborador no es técnico");
         }
         colaborador.arreglarHeladera();
         colaboradorRepository.save(colaborador);
+        incidentes.cambiarEstado(EstadoIncidenteEnum.ARREGLADO);
+        incidentesRepository.save(incidentes);
+
 
 
     }
@@ -187,8 +201,8 @@ public class Fachada implements FachadaColaboradores {
     public void reportarFalla(Integer heladeraId) {
         this.fachadaHeladeras.reportarDesperfecto(heladeraId);
     }
-    public void registrarIncidente(int heladera_id, TipoIncidenteEnum tipo){
-        Incidentes incidentes = new Incidentes(heladera_id, LocalDateTime.now(),tipo);
+    public void registrarIncidente(int heladera_id, TipoIncidenteEnum tipo, EstadoIncidenteEnum estado){
+        Incidentes incidentes = new Incidentes(heladera_id, LocalDateTime.now(),tipo,estado);
         this.incidentesRepository.save(incidentes);
     }
 

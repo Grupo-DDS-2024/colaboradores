@@ -6,6 +6,7 @@ import ar.edu.utn.dds.k3003.facades.FachadaViandas;
 import ar.edu.utn.dds.k3003.model.Clases.Donacion;
 import ar.edu.utn.dds.k3003.model.Clases.SuscripcionHeladera;
 import ar.edu.utn.dds.k3003.model.DTOs.ColaboradorDTOActualizado;
+import ar.edu.utn.dds.k3003.model.Enums.EstadoIncidenteEnum;
 import ar.edu.utn.dds.k3003.model.Enums.TipoIncidenteEnum;
 import ar.edu.utn.dds.k3003.model.formaDeColaborar.*;
 
@@ -43,7 +44,7 @@ public interface FachadaColaboradores {
     void registrarDonacion(Donacion donacion);
     List<Donacion> donacionesDelMes(int mesActual, int anioActual, Long colaboradorId);
 
-    void registrarArreglo(Long colaboradorId,Integer heladera_id) ;
+    void registrarArreglo(Long incidente_id,Long colaboradorId,Integer heladera_id) ;
 
     int cantHeladerasReparadas(Long colaboradorId) ;
 
@@ -52,6 +53,6 @@ public interface FachadaColaboradores {
     SuscripcionHeladera getSuscripcion(Long id);
 
     void reportarFalla(Integer heladeraId);
-    void registrarIncidente(int heladera_id, TipoIncidenteEnum tipo);
+    void registrarIncidente(int heladera_id, TipoIncidenteEnum tipo, EstadoIncidenteEnum estado);
 
 }

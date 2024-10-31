@@ -1,5 +1,6 @@
 package ar.edu.utn.dds.k3003.app;
 
+import ar.edu.utn.dds.k3003.model.Enums.EstadoIncidenteEnum;
 import ar.edu.utn.dds.k3003.model.Enums.TipoIncidenteEnum;
 import com.rabbitmq.client.*;
 
@@ -63,7 +64,7 @@ public class IncidentesWorker extends DefaultConsumer {
         // REPOINCIDENTES FIND BY ID
         int heladeraId = Integer.parseInt(valores.get("heladera_id"));
         TipoIncidenteEnum tipo = TipoIncidenteEnum.buscarEnum(Integer.parseInt(valores.get("tipo")));
-        this.fachada.registrarIncidente(heladeraId,tipo);
+        this.fachada.registrarIncidente(heladeraId,tipo, EstadoIncidenteEnum.NO_REPARADO);
 
 
 

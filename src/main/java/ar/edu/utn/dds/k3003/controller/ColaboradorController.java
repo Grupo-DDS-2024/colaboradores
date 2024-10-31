@@ -124,10 +124,11 @@ public class ColaboradorController {
     }
 
     public void arreglarHeladera(Context context) {
-        var colaboradorId = context.pathParamAsClass("colaborador_id", Long.class).get();
+        var incidente_id = context.pathParamAsClass("id_incidente", Long.class).get();
         int heladeraId = context.bodyAsClass(ArreglarHeladeraRequest.class).getHeladera_id();
+        Long colaboradorId = context.bodyAsClass(ArreglarHeladeraRequest.class).getColaborador_id();
         try {
-            this.fachada.registrarArreglo(colaboradorId, heladeraId);
+            this.fachada.registrarArreglo(incidente_id,colaboradorId, heladeraId);
             Map<String, Object> response = new HashMap<>();
             response.put("Mensaje", "Heladera arreglada correctametne");
             context.status(200).json(response);

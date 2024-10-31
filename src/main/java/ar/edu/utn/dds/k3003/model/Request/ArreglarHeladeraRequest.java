@@ -6,5 +6,7 @@ import lombok.Getter;
 public class ArreglarHeladeraRequest {
     @Getter
     Integer heladera_id;
+    @Getter
+    Long colaborador_id;
 
 }

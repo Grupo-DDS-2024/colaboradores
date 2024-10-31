@@ -105,7 +105,7 @@ public class WebApp {
         app.delete("/suscripcion/{id}",colaboradorController::desuscribirse);
         app.get("/suscripcion/{id}",colaboradorController::getSuscripcion);
         app.post("/reportar_heladera/{id}", colaboradorController::reportarFalla);
-        app.post("/arreglar_heladera/{id}", colaboradorController::arreglarHeladera);
+        app.post("/arreglar_incidente/{id_incidente}", colaboradorController::arreglarHeladera);
     }
 
     public static ObjectMapper createObjectMapper() {
