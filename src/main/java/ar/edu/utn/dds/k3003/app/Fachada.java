@@ -187,6 +187,7 @@ public class Fachada implements FachadaColaboradores {
         colaboradorRepository.save(colaborador);
         incidentes.cambiarEstado(EstadoIncidenteEnum.ARREGLADO);
         incidentesRepository.save(incidentes);
+        this.fachadaHeladeras.arreglarHeladera(heladera_id);
     }
 
     public int cantHeladerasReparadas(Long colaboradorId) {
