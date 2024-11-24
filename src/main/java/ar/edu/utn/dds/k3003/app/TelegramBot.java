@@ -5,6 +5,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
@@ -20,7 +21,7 @@ import java.nio.charset.StandardCharsets;
 
 public class TelegramBot extends TelegramLongPollingBot {
 
-    private String apiEndpoint = "localhost/8082";
+    private String apiEndpoint = "http://localhost:8082";
     @SneakyThrows
     @Override
     public void onUpdateReceived(Update update) { // se invoca cuando el bot recibe un mensaje
@@ -32,18 +33,19 @@ public class TelegramBot extends TelegramLongPollingBot {
             String[] mensaje = messageTextReceived.split(" ");
             String idColaborador = mensaje[1];
             rta = "calcular puntos colaborador: " + idColaborador;
-            /*
-            HttpClient httpClient = HttpClients.createDefault();
-            HttpPost httpPost = new HttpPost(
-                    this.apiEndpoint + "/puntos/colaboradores/" + idColaborador + "/puntos");
 
-            HttpResponse execute = httpClient.execute(httpPost);
+            HttpClient httpClient = HttpClients.createDefault();
+            System.out.println("URL: " + this.apiEndpoint + "/colaboradores/" + idColaborador + "/puntos");
+            HttpGet httpGet = new HttpGet(
+                    this.apiEndpoint + "/colaboradores/" + idColaborador + "/puntos");
+
+            HttpResponse execute = httpClient.execute(httpGet);
             rta = IOUtils.toString(
                     execute.getEntity().getContent(),
                     StandardCharsets.UTF_8.name());
             //return rta;
 
-             */
+
         }
 
 
