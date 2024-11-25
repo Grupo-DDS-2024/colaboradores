@@ -47,6 +47,9 @@ public class Colaborador  {
     @Column(name= "cantHeladeras")
     private Integer cantHeladerasReparadas=0;
 
+    @Column(name = "idTelegram")
+    private String idTelegram;
+
 
 
     public Colaborador(Long id, String nombre) {
@@ -58,6 +61,12 @@ public class Colaborador  {
     public Colaborador(String nombre, List<FormaDeColaborarActualizadoEnum> formas) {
         this.nombre=nombre;
         this.formas=formas;
+    }
+
+    public Colaborador(String nombre, List<FormaDeColaborarActualizadoEnum> formas,String chatId) {
+        this.nombre=nombre;
+        this.formas=formas;
+        this.idTelegram=chatId;
     }
 
     public void suscribirseAHeladera(SuscripcionHeladera suscripcion){

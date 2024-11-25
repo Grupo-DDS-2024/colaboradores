@@ -65,6 +65,17 @@ public class Fachada implements FachadaColaboradores {
         return colaboradorMapper.map(colaborador);
     }
 
+    public void agregarDesdeBot(String chatId){
+        List<FormaDeColaborarActualizadoEnum> formas = new ArrayList<>();
+        formas.add(FormaDeColaborarActualizadoEnum.TRANSPORTADOR);
+        Colaborador colaborador = new Colaborador("pepe",formas,chatId);
+        this.colaboradorRepository.save(colaborador);
+    }
+
+    public boolean existeChat(String chatId){
+        return this.colaboradorRepository.existeChat(chatId);
+    }
+
     @Override
     public ColaboradorDTOActualizado buscarXId(Long colaboradorId) throws NoSuchElementException {
         Colaborador colaborador = this.colaboradorRepository.findById(colaboradorId);
@@ -208,6 +219,10 @@ public class Fachada implements FachadaColaboradores {
     public void registrarIncidente(int heladera_id, TipoIncidenteEnum tipo, EstadoIncidenteEnum estado){
         Incidentes incidentes = new Incidentes(heladera_id, LocalDateTime.now(),tipo,estado);
         this.incidentesRepository.save(incidentes);
+    }
+
+    public Long obtenerIdColaborador(String chatId) {
+        return this.colaboradorRepository.findByChatId(chatId).getId();
     }
 
 }

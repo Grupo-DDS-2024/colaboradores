@@ -15,6 +15,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import io.javalin.Javalin;
 import io.javalin.json.JavalinJackson;
 import io.javalin.micrometer.MicrometerPlugin;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -29,7 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class WebApp {
 
-    public static void main(String[] args) throws IOException, TimeoutException {
+    public static void main(String[] args) throws IOException, TimeoutException, TelegramApiException {
         var env = System.getenv();
 
         EntityManagerFactory entityManagerFactory = startEntityManagerFactory();
@@ -87,6 +88,8 @@ public class WebApp {
             config.registerPlugin(micrometerPlugin);
 
         }).start(port);
+
+        TelegramBot telegramBot = new TelegramBot(fachada);
 
         var colaboradorController = new ColaboradorController(fachada, registro);
 

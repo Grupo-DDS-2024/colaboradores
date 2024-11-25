@@ -13,4 +13,7 @@ public class UpdateFormasColaborarRequest {
     public UpdateFormasColaborarRequest() {
     }
 
+    public UpdateFormasColaborarRequest(List<FormaDeColaborarActualizadoEnum> list) {
+        this.formas = list;
+    }
 }
