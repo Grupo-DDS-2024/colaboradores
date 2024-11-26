@@ -81,8 +81,8 @@ public class ColaboradorRepository {
     public boolean existeChat(String chatId) {
         EntityManager entityManager = this.entityManagerFactory.createEntityManager();
         entityManager.getTransaction().begin();
-        Long count = (Long) entityManager.createQuery("SELECT COUNT(c) FROM Colaborador c WHERE c.idTelegram = :chatId",Long.class)
-                .setParameter("chatId",chatId).getSingleResult();
+        Long count = (Long) entityManager.createQuery("SELECT COUNT(c) FROM Colaborador c WHERE c.id = :chatId",Long.class)
+                .setParameter("chatId",Long.parseLong(chatId)).getSingleResult();
         entityManager.getTransaction().commit();
         entityManager.close();
         return count >0;

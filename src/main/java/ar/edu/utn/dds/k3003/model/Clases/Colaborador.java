@@ -20,7 +20,6 @@ import java.util.List;
 public class Colaborador  {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "nombre")
@@ -47,8 +46,6 @@ public class Colaborador  {
     @Column(name= "cantHeladeras")
     private Integer cantHeladerasReparadas=0;
 
-    @Column(name = "idTelegram")
-    private String idTelegram;
 
 
 
@@ -64,9 +61,9 @@ public class Colaborador  {
     }
 
     public Colaborador(String nombre, List<FormaDeColaborarActualizadoEnum> formas,String chatId) {
+        this.id=Long.parseLong(chatId);
         this.nombre=nombre;
         this.formas=formas;
-        this.idTelegram=chatId;
     }
 
     public void suscribirseAHeladera(SuscripcionHeladera suscripcion){

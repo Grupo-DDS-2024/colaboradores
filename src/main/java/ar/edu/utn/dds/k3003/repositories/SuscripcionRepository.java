@@ -1,9 +1,12 @@
 package ar.edu.utn.dds.k3003.repositories;
 
+import ar.edu.utn.dds.k3003.model.Clases.Colaborador;
 import ar.edu.utn.dds.k3003.model.Clases.SuscripcionHeladera;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
@@ -42,6 +45,16 @@ public class SuscripcionRepository {
         entityManager.getTransaction().commit();
         entityManager.close();
         return suscripcion;
+    }
+
+    public List<SuscripcionHeladera> buscarSuscripcionesPorColaborador(Colaborador colaborador){
+        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+        List<SuscripcionHeladera> suscripciones = entityManager.createQuery("SELECT * FROM SuscripcionHeladera r WHERE r.colaborador = :colaboradorId",SuscripcionHeladera.class)
+                .setParameter("colaboradorId",colaborador).getResultList();
+        entityManager.getTransaction().commit();
+        entityManager.close();
+        return suscripciones;
     }
 
     public void delete(Long id){

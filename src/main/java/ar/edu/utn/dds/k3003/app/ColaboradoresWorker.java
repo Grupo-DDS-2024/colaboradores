@@ -14,11 +14,13 @@ public class ColaboradoresWorker extends DefaultConsumer {
 
     private String queueName;
     private EntityManagerFactory entityManagerFactory;
+    private Fachada fachada;
 
-    protected ColaboradoresWorker(Channel channel, String queueName, EntityManagerFactory entityManagerFactory) {
+    protected ColaboradoresWorker(Channel channel, String queueName, EntityManagerFactory entityManagerFactory,Fachada fachada) {
         super(channel);
         this.queueName = queueName;
         this.entityManagerFactory = entityManagerFactory;
+        this.fachada=fachada;
     }
 
     public static void main(String[] args) throws Exception {
@@ -36,8 +38,8 @@ public class ColaboradoresWorker extends DefaultConsumer {
 
         EntityManagerFactory entityManagerFactory2 = WebApp.startEntityManagerFactory();
 
-        ColaboradoresWorker worker = new ColaboradoresWorker(channel, queueName, entityManagerFactory2);
-        worker.init();
+        //ColaboradoresWorker worker = new ColaboradoresWorker(channel, queueName, entityManagerFactory2);
+        //worker.init();
     }
 
 
@@ -70,6 +72,8 @@ public class ColaboradoresWorker extends DefaultConsumer {
         NotificacionRepository repo = new NotificacionRepository(entityManagerFactory);
         NotificacionesHeladeras notificacionesHeladeras = new NotificacionesHeladeras(colaboradorId,heladeraId,tipo);
         repo.save(notificacionesHeladeras);
+
+        fachada.notificar(colaboradorId,tipo,heladeraId);
 
 
 

@@ -3,6 +3,7 @@ package ar.edu.utn.dds.k3003.controller;
 import ar.edu.utn.dds.k3003.app.Fachada;
 import ar.edu.utn.dds.k3003.facades.dtos.ColaboradorDTO;
 
+import ar.edu.utn.dds.k3003.facades.dtos.TrasladoDTO;
 import ar.edu.utn.dds.k3003.model.Clases.Donacion;
 import ar.edu.utn.dds.k3003.model.Clases.SuscripcionHeladera;
 import ar.edu.utn.dds.k3003.model.DTOs.ColaboradorDTOActualizado;
@@ -36,7 +37,8 @@ public class ColaboradorController {
     public void agregar(Context context) {
         try {
             var colaboradorDTOActualizado = context.bodyAsClass(ColaboradorDTOActualizado.class);
-            var colaboradorDTORta = this.fachada.agregar(colaboradorDTOActualizado);
+            //var colaboradorDTORta = this.fachada.agregar(colaboradorDTOActualizado);
+            var colaboradorDTORta = this.fachada.agregarDesdeBot(colaboradorDTOActualizado.getId().toString());
             contadorColaboradores.increment();
             context.json(colaboradorDTORta);
             context.status(HttpStatus.CREATED);
@@ -128,16 +130,15 @@ public class ColaboradorController {
 
     public void arreglarHeladera(Context context) {
         var incidente_id = context.pathParamAsClass("id_incidente", Long.class).get();
-        int heladeraId = context.bodyAsClass(ArreglarHeladeraRequest.class).getHeladera_id();
         Long colaboradorId = context.bodyAsClass(ArreglarHeladeraRequest.class).getColaborador_id();
-        try {
-            this.fachada.registrarArreglo(incidente_id,colaboradorId, heladeraId);
+        //try {
+            this.fachada.registrarArreglo(incidente_id,colaboradorId);
             Map<String, Object> response = new HashMap<>();
             response.put("Mensaje", "Heladera arreglada correctametne");
             context.status(200).json(response);
-        } catch (Exception e) {
-            throw new BadRequestResponse("Error de solicitud.");
-        }
+        //} catch (Exception e) {
+            //throw new BadRequestResponse("Error de solicitud.");
+        //}
     }
     public void suscripcionAPocasViandas(Context context){
         var id = context.pathParamAsClass("colaboradorId", Long.class).get();
@@ -218,6 +219,15 @@ public class ColaboradorController {
         }catch (Exception e){
             throw new BadRequestResponse("Error de solicitud.");
         }
+    }
+
+    public void incidentes(Context context){
+        context.json(fachada.incidentes());
+    }
+
+    public void notificarTraslado(Context context){
+        TrasladoDTO trasladoDTO = context.bodyAsClass(TrasladoDTO.class);
+        fachada.notificarTraslado(trasladoDTO);
     }
 
 

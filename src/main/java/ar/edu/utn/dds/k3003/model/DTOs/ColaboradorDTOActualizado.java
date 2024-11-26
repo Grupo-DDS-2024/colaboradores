@@ -14,6 +14,12 @@ public final class ColaboradorDTOActualizado {
         this.formas = formas;
     }
 
+    public ColaboradorDTOActualizado(String nombre, List<FormaDeColaborarActualizadoEnum> formas, Long id) {
+        this.nombre = nombre;
+        this.formas = formas;
+        this.id = id;
+    }
+
     public Long getId() {
         return this.id;
     }

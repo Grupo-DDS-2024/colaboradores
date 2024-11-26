@@ -5,6 +5,10 @@ import ar.edu.utn.dds.k3003.model.Clases.Incidentes;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
@@ -40,5 +44,18 @@ public class IncidentesRepository {
         entityManager.close();
         return incidentes;
 
+    }
+
+    public List<Incidentes> todos(){
+        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Incidentes> cq = cb.createQuery(Incidentes.class);
+        Root<Incidentes> ruta = cq.from(Incidentes.class);
+        cq.select(ruta);
+        List<Incidentes> incidentes = entityManager.createQuery(cq).getResultList();
+        entityManager.getTransaction().commit();
+        entityManager.close();
+        return incidentes;
     }
 }

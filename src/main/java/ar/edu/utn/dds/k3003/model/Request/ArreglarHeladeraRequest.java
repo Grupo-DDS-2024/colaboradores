@@ -4,9 +4,13 @@ import lombok.Getter;
 
 @Getter
 public class ArreglarHeladeraRequest {
-    @Getter
-    Integer heladera_id;
+    public ArreglarHeladeraRequest(Long colaborador_id) {
+        this.colaborador_id = colaborador_id;
+    }
+
     @Getter
     Long colaborador_id;
 
+    public ArreglarHeladeraRequest() {
+    }
 }

@@ -2,9 +2,11 @@ package ar.edu.utn.dds.k3003.app;
 
 import ar.edu.utn.dds.k3003.clients.HeladeraProxy;
 import ar.edu.utn.dds.k3003.facades.dtos.FormaDeColaborarEnum;
+import ar.edu.utn.dds.k3003.facades.dtos.TrasladoDTO;
 import ar.edu.utn.dds.k3003.model.Clases.*;
 import ar.edu.utn.dds.k3003.model.Enums.EstadoIncidenteEnum;
 import ar.edu.utn.dds.k3003.model.Enums.TipoIncidenteEnum;
+import ar.edu.utn.dds.k3003.model.Enums.TipoNotificacionEnum;
 import ar.edu.utn.dds.k3003.model.FachadaColaboradores;
 import ar.edu.utn.dds.k3003.facades.FachadaLogistica;
 import ar.edu.utn.dds.k3003.facades.FachadaViandas;
@@ -13,6 +15,7 @@ import ar.edu.utn.dds.k3003.model.formaDeColaborar.FormaDeColaborarActualizadoEn
 import ar.edu.utn.dds.k3003.model.formaDeColaborar.*;
 import ar.edu.utn.dds.k3003.repositories.*;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.EntityManagerFactory;
 import java.time.LocalDateTime;
@@ -36,6 +39,8 @@ public class Fachada implements FachadaColaboradores {
     private DonacionesRepository donacionesRepository;
     private SuscripcionRepository suscripcionRepository;
     private IncidentesRepository incidentesRepository;
+    @Setter
+    private TelegramBot bot;
 
 //  public Fachada() {
 //    this.entityManagerFactory = Persistence.createEntityManagerFactory("defaultdb");
@@ -65,11 +70,12 @@ public class Fachada implements FachadaColaboradores {
         return colaboradorMapper.map(colaborador);
     }
 
-    public void agregarDesdeBot(String chatId){
+    public ColaboradorDTOActualizado agregarDesdeBot(String chatId){
         List<FormaDeColaborarActualizadoEnum> formas = new ArrayList<>();
-        formas.add(FormaDeColaborarActualizadoEnum.TRANSPORTADOR);
+        formas.add(FormaDeColaborarActualizadoEnum.TECNICO);
         Colaborador colaborador = new Colaborador("pepe",formas,chatId);
         this.colaboradorRepository.save(colaborador);
+        return this.colaboradorMapper.map(colaborador);
     }
 
     public boolean existeChat(String chatId){
@@ -185,7 +191,7 @@ public class Fachada implements FachadaColaboradores {
         return this.donacionesRepository.donacionesDelMes(mesActual,anioActual,colaboradorId);
     }
 
-    public void registrarArreglo(Long incidente_id,Long colaboradorId, Integer heladera_id) {
+    public void registrarArreglo(Long incidente_id,Long colaboradorId) {
         Colaborador colaborador = this.colaboradorRepository.findById(colaboradorId);
         Incidentes incidentes  = incidentesRepository.findById(incidente_id);
         if(incidentes.getEstado() == EstadoIncidenteEnum.ARREGLADO){
@@ -198,7 +204,7 @@ public class Fachada implements FachadaColaboradores {
         colaboradorRepository.save(colaborador);
         incidentes.cambiarEstado(EstadoIncidenteEnum.ARREGLADO);
         incidentesRepository.save(incidentes);
-        this.fachadaHeladeras.arreglarHeladera(heladera_id);
+        this.fachadaHeladeras.arreglarHeladera(incidentes.getHeladeraId());
     }
 
     public int cantHeladerasReparadas(Long colaboradorId) {
@@ -222,7 +228,24 @@ public class Fachada implements FachadaColaboradores {
     }
 
     public Long obtenerIdColaborador(String chatId) {
-        return this.colaboradorRepository.findByChatId(chatId).getId();
+        return this.colaboradorRepository.findById(Long.parseLong(chatId)).getId();
     }
 
+    public List<Incidentes> incidentes(){
+
+        return  incidentesRepository.todos();
+    }
+
+    public void notificar(Long id, TipoNotificacionEnum tipo, Integer heladeraId){
+        bot.sendMessage(id.toString(),"Se detecto un evento de tipo: "+ tipo.toString()+ ", de la heladera: "+heladeraId.toString());
+    }
+
+    public void notificarTraslado(TrasladoDTO trasladoDTO){
+        bot.sendMessage(trasladoDTO.getColaboradorId().toString(), "Se le asignó el siguiente traslado: HeladeraOrigen: "+trasladoDTO.getHeladeraOrigen()+"\n"+
+                "HeladeraDestino: "+trasladoDTO.getHeladeraDestino() +"\n"+"Para la vianda con QR: "+trasladoDTO.getQrVianda());
+    }
+
+    public List<SuscripcionHeladera> verSuscripciones(Long colaboradorId) {
+        return this.suscripcionRepository.buscarSuscripcionesPorColaborador(this.colaboradorRepository.findById(colaboradorId));
+    }
 }

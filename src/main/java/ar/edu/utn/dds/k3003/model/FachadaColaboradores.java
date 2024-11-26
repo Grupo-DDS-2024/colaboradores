@@ -44,7 +44,7 @@ public interface FachadaColaboradores {
     void registrarDonacion(Donacion donacion);
     List<Donacion> donacionesDelMes(int mesActual, int anioActual, Long colaboradorId);
 
-    void registrarArreglo(Long incidente_id,Long colaboradorId,Integer heladera_id) ;
+    void registrarArreglo(Long incidente_id,Long colaboradorId) ;
 
     int cantHeladerasReparadas(Long colaboradorId) ;
 

@@ -33,8 +33,11 @@ public class WebApp {
     public static void main(String[] args) throws IOException, TimeoutException, TelegramApiException {
         var env = System.getenv();
 
+
         EntityManagerFactory entityManagerFactory = startEntityManagerFactory();
         var fachada = new Fachada(entityManagerFactory);
+        TelegramBot telegramBot = new TelegramBot(fachada);
+        fachada.setBot(telegramBot);
         var objectMapper = createObjectMapper();
         fachada.setViandasProxy(new ViandasProxy(objectMapper));
         fachada.setLogisticaProxy(new LogisticaProxy(objectMapper));
@@ -61,7 +64,7 @@ public class WebApp {
 
         EntityManagerFactory entityManagerFactory2 = WebApp.startEntityManagerFactory();
 
-        ColaboradoresWorker worker = new ColaboradoresWorker(channel, queueName, entityManagerFactory2);
+        ColaboradoresWorker worker = new ColaboradoresWorker(channel, queueName, entityManagerFactory2,fachada);
         worker.init();
 
         Map<String, String> envIncidente = System.getenv();
@@ -89,7 +92,7 @@ public class WebApp {
 
         }).start(port);
 
-        TelegramBot telegramBot = new TelegramBot(fachada);
+
 
         var colaboradorController = new ColaboradorController(fachada, registro);
 
@@ -109,6 +112,8 @@ public class WebApp {
         app.get("/suscripcion/{id}",colaboradorController::getSuscripcion);
         app.post("/reportar_heladera/{id}", colaboradorController::reportarFalla);
         app.post("/arreglar_incidente/{id_incidente}", colaboradorController::arreglarHeladera);
+        app.get("/incidentes", colaboradorController::incidentes);
+        app.post("/notificarTraslado",colaboradorController::notificarTraslado);
     }
 
     public static ObjectMapper createObjectMapper() {
