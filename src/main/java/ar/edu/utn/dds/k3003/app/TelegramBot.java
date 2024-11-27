@@ -79,10 +79,10 @@ public class TelegramBot extends TelegramLongPollingBot {
              if(fachada.existeChat(chatId)){
                  sendMessage(chatId,"¡Bienvenido de nuevo!");
              }else{
-                 fachada.agregarDesdeBot(chatId);
-                 sendMessage(chatId,"Hola! Tu ID ha sido registrado."); // preg formas de colaborar, nombre, etc
+                 sendMessage(chatId,"¡Bienvenido! Por favor escriba su nombre:");
+                 userState.put(chatId,"nombreInput");
+
              }
-             mostrarMenuPrincipal(chatId);
 
 
          }else if(update.hasMessage() && update.getMessage().hasText()){
@@ -151,6 +151,15 @@ public class TelegramBot extends TelegramLongPollingBot {
                 case "desuscribirse":
                     Integer idSuscripcion = Integer.parseInt(update.getMessage().getText());
                     desuscribirse(chatId,idSuscripcion);
+                    break;
+                case "nombreInput":
+                    String nombre = update.getMessage().getText().trim();
+                    fachada.agregarDesdeBot(chatId,nombre);
+                    sendMessage(chatId,"Gracias, "+nombre+". Ahora seleccione cómo desea colaborar:");
+                    var message = new SendMessage();
+                    message.setChatId(chatId);
+                    agregarFormaColaborar(message);
+                    execute(message);
                     break;
 
                 default:
@@ -221,6 +230,9 @@ public class TelegramBot extends TelegramLongPollingBot {
                      break;
                  case "confirmar_forma_colaborar":
                      modificarFormas(formasPorUsuario.get(chatId),chatId);
+                     if(userState.get(chatId).equalsIgnoreCase("nombreInput")){
+                         mostrarMenuPrincipal(chatId);
+                     }
                      break;
 
                  case "reportarHeladera":

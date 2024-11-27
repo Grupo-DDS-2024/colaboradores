@@ -70,10 +70,10 @@ public class Fachada implements FachadaColaboradores {
         return colaboradorMapper.map(colaborador);
     }
 
-    public ColaboradorDTOActualizado agregarDesdeBot(String chatId){
+    public ColaboradorDTOActualizado agregarDesdeBot(String chatId,String nombre){
         List<FormaDeColaborarActualizadoEnum> formas = new ArrayList<>();
         formas.add(FormaDeColaborarActualizadoEnum.TECNICO);
-        Colaborador colaborador = new Colaborador("pepe",formas,chatId);
+        Colaborador colaborador = new Colaborador(nombre,formas,chatId);
         this.colaboradorRepository.save(colaborador);
         return this.colaboradorMapper.map(colaborador);
     }

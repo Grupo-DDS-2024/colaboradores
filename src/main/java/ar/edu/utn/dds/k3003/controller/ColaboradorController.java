@@ -38,7 +38,7 @@ public class ColaboradorController {
         try {
             var colaboradorDTOActualizado = context.bodyAsClass(ColaboradorDTOActualizado.class);
             //var colaboradorDTORta = this.fachada.agregar(colaboradorDTOActualizado);
-            var colaboradorDTORta = this.fachada.agregarDesdeBot(colaboradorDTOActualizado.getId().toString());
+            var colaboradorDTORta = this.fachada.agregarDesdeBot(colaboradorDTOActualizado.getId().toString(), colaboradorDTOActualizado.getNombre());
             contadorColaboradores.increment();
             context.json(colaboradorDTORta);
             context.status(HttpStatus.CREATED);
