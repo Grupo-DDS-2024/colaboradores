@@ -54,6 +54,12 @@ public class TelegramBot extends TelegramLongPollingBot {
     private Map<String, Set<FormaDeColaborarActualizadoEnum>> formasPorUsuario;
     private Map<String, String> userState;
 
+    private String emjTrasportador = "\uD83D\uDE9A";
+    private String emjTecnico = "\uD83E\uDDD1\u200D\uD83D\uDD27";
+    private String emjDonadorViandas = "\uD83C\uDF72";
+    private String emjDonadorDinero = "\uD83D\uDCB0";
+    private String emjConfirmar = "✅";
+
     public TelegramBot(Fachada fachada) throws TelegramApiException {
 
         //super();
@@ -77,7 +83,10 @@ public class TelegramBot extends TelegramLongPollingBot {
         if(update.hasMessage() && update.getMessage().hasText() && update.getMessage().getText().equals("/start")){
              String chatId = update.getMessage().getChatId().toString();
              if(fachada.existeChat(chatId)){
-                 sendMessage(chatId,"¡Bienvenido de nuevo!");
+                 String nombre = fachada.buscarXId(Long.parseLong(chatId)).getNombre();
+                 sendMessage(chatId,"¡Bienvenido de nuevo, " + nombre + "!");
+                 userState.put(chatId, "default");
+                 mostrarMenuPrincipal(chatId);
              }else{
                  sendMessage(chatId,"¡Bienvenido! Por favor escriba su nombre:");
                  userState.put(chatId,"nombreInput");
@@ -155,7 +164,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 case "nombreInput":
                     String nombre = update.getMessage().getText().trim();
                     fachada.agregarDesdeBot(chatId,nombre);
-                    sendMessage(chatId,"Gracias, "+nombre+". Ahora seleccione cómo desea colaborar:");
+                    sendMessage(chatId,"\uD83D\uDE80 Gracias, "+nombre+". Ahora seleccione cómo desea colaborar:");
                     var message = new SendMessage();
                     message.setChatId(chatId);
                     agregarFormaColaborar(message);
@@ -230,6 +239,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                      break;
                  case "confirmar_forma_colaborar":
                      modificarFormas(formasPorUsuario.get(chatId),chatId);
+                     //if (!userState.containsKey(chatId)) break;
                      if(userState.get(chatId).equalsIgnoreCase("nombreInput")){
                          mostrarMenuPrincipal(chatId);
                      }
@@ -367,11 +377,11 @@ public class TelegramBot extends TelegramLongPollingBot {
         List<InlineKeyboardButton> fila3 = new ArrayList<>();
         List<InlineKeyboardButton> fila4 = new ArrayList<>();
         List<InlineKeyboardButton> fila5 = new ArrayList<>();
-        fila1.add(createButton("Donador de viandas","donador_viandas"));
-        fila2.add(createButton("Donador de dinero","donador_dinero"));
-        fila3.add(createButton("Técnico","tecnico"));
-        fila4.add(createButton("Transportador","transportador"));
-        fila5.add(createButton("Confirmar", "confirmar_forma_colaborar"));
+        fila1.add(createButton(emjDonadorViandas + "Donador de viandas","donador_viandas"));
+        fila2.add(createButton(emjDonadorDinero + "Donador de dinero","donador_dinero"));
+        fila3.add(createButton(emjTecnico + "Técnico","tecnico"));
+        fila4.add(createButton(emjTrasportador + "Transportador","transportador"));
+        fila5.add(createButton(emjConfirmar + "Confirmar", "confirmar_forma_colaborar"));
         filas.add(fila1);
         filas.add(fila2);
         filas.add(fila3);
@@ -622,11 +632,30 @@ public class TelegramBot extends TelegramLongPollingBot {
         httpPatch.setHeader("Content-Type","application/json");
         HttpResponse execute = httpClient.execute(httpPatch);
         String rta = IOUtils.toString(execute.getEntity().getContent(), StandardCharsets.UTF_8);
-        sendMessage(chatId,json);
+        sendMessage(chatId, "Tus formas de colaborar son:");
+        mostrarFormasDeColaborar(chatId, formasLista);
         formasPorUsuario.remove(chatId);
 
     }
 
+    private void mostrarFormasDeColaborar(String chatId, Set<String> formasLista) {
+        for (String forma : formasLista) {
+            switch (forma) {
+                case "TRANSPORTADOR":
+                    sendMessage(chatId, emjTrasportador + "Transportador");
+                    break;
+                case "TECNICO":
+                    sendMessage(chatId, emjTecnico + "Técnico");
+                    break;
+                case "DONADOR_DINERO":
+                    sendMessage(chatId, emjDonadorDinero + "Donador de dinero");
+                    break;
+                case "DONADOR_VIANDAS":
+                    sendMessage(chatId, emjDonadorViandas + "Donador de viandas");
+                    break;
+            }
+        }
+    }
     public void reportarHeladera(String chatId,Integer heladeraId) throws IOException {
         // reportar_heladera/1
         HttpClient httpClient = HttpClients.createDefault();
