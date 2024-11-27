@@ -28,17 +28,44 @@ public class SuscripcionHeladera {
     private int viandasDisponible = -1;
     @Column
     private boolean notificarDesperfecto = false;
+    @Column
+    private String nombre;
 
 
-    public SuscripcionHeladera(Colaborador colaborador, @NotNull int heladera_id, int cantMinimaViandas, int viandasDisponible, boolean notificarDesperfecto) {
+    public SuscripcionHeladera(Colaborador colaborador, @NotNull int heladera_id, int cantMinimaViandas, int viandasDisponible, boolean notificarDesperfecto,String nombre) {
         this.colaborador = colaborador;
         this.heladera_id = heladera_id;
         this.cantMinimaViandas = cantMinimaViandas;
         this.viandasDisponible = viandasDisponible;
         this.notificarDesperfecto = notificarDesperfecto;
+        this.nombre = nombre;
     }
 
     public SuscripcionHeladera() {
 
+    }
+
+    @Override
+    public String toString(){
+        if(nombre.equalsIgnoreCase("QuedanViandas")){
+            return "Suscripcion: " +
+                    "ID de la suscripción: "+id+"\n" +
+                    "Suscripción: "+nombre+"\n"+
+                    "ID de la heladera: "+heladera_id+"\n"+
+                    "Valor de notificación: "+cantMinimaViandas+"\n";
+
+        }
+        if(nombre.equalsIgnoreCase("FaltanViandas")){
+            return "Suscripcion: " +
+                    "ID de la suscripción: "+id+"\n" +
+                    "Suscripción: "+nombre+"\n"+
+                    "ID de la heladera: "+heladera_id+"\n"+
+                    "Valor de notificación: "+cantMinimaViandas+"\n";
+        }else {
+            return "Suscripcion: " +
+                    "ID de la suscripción: "+id+"\n" +
+                    "Suscripción: "+nombre+"\n"+
+                    "ID de la heladera: "+heladera_id+"\n";
+        }
     }
 }

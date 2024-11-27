@@ -136,7 +136,7 @@ public class Fachada implements FachadaColaboradores {
 
     public SuscripcionHeladera suscribirseAPocasViandas(Long colaborador_id, int heladera_id, int cantMinimaViandas){
         Colaborador colaborador = colaboradorRepository.findById(colaborador_id);
-        SuscripcionHeladera suscripcion = new SuscripcionHeladera(colaborador,heladera_id,cantMinimaViandas,-1,false);
+        SuscripcionHeladera suscripcion = new SuscripcionHeladera(colaborador,heladera_id,cantMinimaViandas,-1,false,"QuedanViandas");
         this.suscripcionRepository.save(suscripcion);
         colaborador.suscribirseAHeladera(suscripcion);
 
@@ -147,7 +147,7 @@ public class Fachada implements FachadaColaboradores {
 
     public void suscribirseAFaltanViandas(Long colaborador_id, int heladera_id, int viandasDisponibles){
         Colaborador colaborador = colaboradorRepository.findById(colaborador_id);
-        SuscripcionHeladera suscripcion = new SuscripcionHeladera(colaborador,heladera_id,-1,viandasDisponibles,false);
+        SuscripcionHeladera suscripcion = new SuscripcionHeladera(colaborador,heladera_id,-1,viandasDisponibles,false,"FaltanViandas");
         this.suscripcionRepository.save(suscripcion);
         colaborador.suscribirseAHeladera(suscripcion);
         this.fachadaHeladeras.agregarSuscriptor(colaborador_id,heladera_id,-1,viandasDisponibles,false);
@@ -155,7 +155,7 @@ public class Fachada implements FachadaColaboradores {
 
     public void suscribirseADesperfecto(Long colaborador_id, int heladera_id){
         Colaborador colaborador = colaboradorRepository.findById(colaborador_id);
-        SuscripcionHeladera suscripcion = new SuscripcionHeladera(colaborador,heladera_id,-1,-1,true);
+        SuscripcionHeladera suscripcion = new SuscripcionHeladera(colaborador,heladera_id,-1,-1,true,"Desperfecto");
         this.suscripcionRepository.save(suscripcion);
         colaborador.suscribirseAHeladera(suscripcion);
         this.fachadaHeladeras.agregarSuscriptor(colaborador_id,heladera_id,-1,-1,true);
@@ -245,7 +245,7 @@ public class Fachada implements FachadaColaboradores {
                 "HeladeraDestino: "+trasladoDTO.getHeladeraDestino() +"\n"+"Para la vianda con QR: "+trasladoDTO.getQrVianda());
     }
 
-    public List<SuscripcionHeladera> verSuscripciones(Long colaboradorId) {
+    public List<String> verSuscripciones(Long colaboradorId) {
         return this.suscripcionRepository.buscarSuscripcionesPorColaborador(this.colaboradorRepository.findById(colaboradorId));
     }
 }

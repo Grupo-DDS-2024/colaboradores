@@ -49,7 +49,7 @@ public class HeladeraProxy{
         if (execute.code() == 500) {
             throw new NoSuchElementException("Error 1");
         }
-        throw new RuntimeException("Error al conectarse con el componente Logistica");
+        throw new RuntimeException("Error al conectarse con el componente Heladera");
     }
 
     @SneakyThrows

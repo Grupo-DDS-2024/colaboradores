@@ -7,6 +7,7 @@ import ar.edu.utn.dds.k3003.model.Request.SuscripcionCantViandasRequest;
 import ar.edu.utn.dds.k3003.model.Request.UpdateFormasColaborarRequest;
 import ar.edu.utn.dds.k3003.model.formaDeColaborar.FormaDeColaborar;
 import ar.edu.utn.dds.k3003.model.formaDeColaborar.FormaDeColaborarActualizadoEnum;
+import ar.edu.utn.dds.k3003.repositories.SuscripcionRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
@@ -14,10 +15,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPatch;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.*;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
@@ -150,6 +148,10 @@ public class TelegramBot extends TelegramLongPollingBot {
                     Long idTrasladoRetirar = Long.parseLong(update.getMessage().getText());
                     retirarTraslado(chatId, idTrasladoRetirar);
                     break;
+                case "desuscribirse":
+                    Integer idSuscripcion = Integer.parseInt(update.getMessage().getText());
+                    desuscribirse(chatId,idSuscripcion);
+                    break;
 
                 default:
                     sendMessage(chatId,"Para iniciar el bot escriba /start");
@@ -166,19 +168,16 @@ public class TelegramBot extends TelegramLongPollingBot {
                  case "colaboradores":
                      message.setText("Selecciona ");
                      this.botonesColaboradores(message);
-
-                     // Desuscribirse a los eventos de una heladera.
                      execute(message);
                      break;
                  case "logistica":
                      message.setText("Seleccionaste logistica");
-                     //Ver los retiros del día de una heladera
                      this.botonesLogistica(message);
                      execute(message);
                      break;
                  case "heladeras":
                      message.setText("Seleccionaste heladeras");
-                     //ver las heladeras en una zona
+                     //ver las heladeras en una zona TODO
                      this.botonesHeladeras(message);
                      execute(message);
                      break;
@@ -285,6 +284,13 @@ public class TelegramBot extends TelegramLongPollingBot {
 
                  case "verSuscripciones":
                      verSuscripciones(chatId);
+                     break;
+                 case "desuscribirse":
+                     userState.put(chatId,"desuscribirse");
+                     sendMessage(chatId,"Ingrese el ID de la suscripción a desuscribirse.");
+                     break;
+                 case "retirosDelDia":
+                     retirosDelDia(chatId);
                      break;
                  default:
                      message.setText("Opcion no reconocida");
@@ -411,6 +417,9 @@ public class TelegramBot extends TelegramLongPollingBot {
         List<InlineKeyboardButton> fila8 = new ArrayList<>();
         fila8.add(createButton("Ver suscripciones","verSuscripciones"));
         filas.add(fila8);
+        List<InlineKeyboardButton> fila9 = new ArrayList<>();
+        fila9.add(createButton("Desuscribirse","desuscribirse"));
+        filas.add(fila9);
 
         // Agregar botones: Ir al inicio, Salir capaz?
 
@@ -475,6 +484,10 @@ public class TelegramBot extends TelegramLongPollingBot {
         List<InlineKeyboardButton> fila5 = new ArrayList<>();
         fila5.add(createButton("Retirar traslado","retirarTraslado"));
         filas.add(fila5);
+
+        List<InlineKeyboardButton> fila6 = new ArrayList<>();
+        fila6.add(createButton("Retiros del dia","retirosDelDia"));
+        filas.add(fila6);
 
         // Agregar botones: Ir al inicio, Salir capaz?
 
@@ -547,7 +560,15 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     private void verSuscripciones(String chatId) {
-        sendMessage(chatId, fachada.verSuscripciones(Long.parseLong(chatId)).toString());
+        List<String> suscripciones = fachada.verSuscripciones(Long.parseLong(chatId));
+        if(suscripciones.isEmpty()){
+            sendMessage(chatId,"No tenes suscripciones registradas.");
+            return;
+        }
+        for(String suscripcion:suscripciones){
+            sendMessage(chatId,suscripcion);
+        }
+
     }
     private void obtenerOcupacionHeladeras(String chatId, int heladeraId) throws IOException {
         HttpClient httpClient = HttpClients.createDefault();
@@ -726,6 +747,23 @@ public class TelegramBot extends TelegramLongPollingBot {
         sendMessage(chatId,rta);
     }
 
+    @SneakyThrows
+    private void desuscribirse(String chatId, Integer suscripcionId){
+        HttpClient httpClient = HttpClients.createDefault();
+        HttpDelete httpDelete = new HttpDelete(apiColaboradores+"/suscripcion/"+suscripcionId.toString());
+        HttpResponse execute = httpClient.execute(httpDelete);
+        String rta = IOUtils.toString(execute.getEntity().getContent(), StandardCharsets.UTF_8);
+        sendMessage(chatId,rta);
+    }
+
+    @SneakyThrows
+    private void retirosDelDia(String chatId){
+        HttpClient httpClient = HttpClients.createDefault();
+        HttpGet httpGet = new HttpGet(apiLogistica+"/retirosDelDia");
+        HttpResponse execute = httpClient.execute(httpGet);
+        String rta = IOUtils.toString(execute.getEntity().getContent(), StandardCharsets.UTF_8);
+        sendMessage(chatId,rta);
+    }
 
 
 

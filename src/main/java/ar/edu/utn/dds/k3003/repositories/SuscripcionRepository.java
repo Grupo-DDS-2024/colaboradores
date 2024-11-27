@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class SuscripcionRepository {
 
@@ -47,14 +48,15 @@ public class SuscripcionRepository {
         return suscripcion;
     }
 
-    public List<SuscripcionHeladera> buscarSuscripcionesPorColaborador(Colaborador colaborador){
+    public List<String> buscarSuscripcionesPorColaborador(Colaborador colaborador){
         EntityManager entityManager = this.entityManagerFactory.createEntityManager();
         entityManager.getTransaction().begin();
-        List<SuscripcionHeladera> suscripciones = entityManager.createQuery("SELECT * FROM SuscripcionHeladera r WHERE r.colaborador = :colaboradorId",SuscripcionHeladera.class)
+        List<SuscripcionHeladera> suscripciones = entityManager.createQuery("SELECT r FROM SuscripcionHeladera r WHERE r.colaborador = :colaboradorId",SuscripcionHeladera.class)
                 .setParameter("colaboradorId",colaborador).getResultList();
         entityManager.getTransaction().commit();
         entityManager.close();
-        return suscripciones;
+        List<String> suscripcionesString = suscripciones.stream().map(SuscripcionHeladera::toString).collect(Collectors.toList());
+        return suscripcionesString;
     }
 
     public void delete(Long id){
