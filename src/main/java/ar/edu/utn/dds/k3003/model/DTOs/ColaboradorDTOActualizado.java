@@ -1,6 +1,7 @@
 package ar.edu.utn.dds.k3003.model.DTOs;
 
 import ar.edu.utn.dds.k3003.model.formaDeColaborar.FormaDeColaborarActualizadoEnum;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -8,6 +9,8 @@ public final class ColaboradorDTOActualizado {
     private Long id;
     private String nombre;
     private List<FormaDeColaborarActualizadoEnum> formas;
+    @Setter
+    private Double puntos;
 
     public ColaboradorDTOActualizado(String nombre, List<FormaDeColaborarActualizadoEnum> formas) {
         this.nombre = nombre;

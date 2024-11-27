@@ -29,9 +29,9 @@ public interface FachadaColaboradores {
 
     SuscripcionHeladera suscribirseAPocasViandas(Long colaborador_id, int heladera_id, int cantMinimaViandas);
 
-    void suscribirseAFaltanViandas(Long colaborador_id, int heladera_id, int viandasDisponibles);
+    SuscripcionHeladera suscribirseAFaltanViandas(Long colaborador_id, int heladera_id, int viandasDisponibles);
 
-    void suscribirseADesperfecto(Long colaborador_id, int heladera_id);
+    SuscripcionHeladera suscribirseADesperfecto(Long colaborador_id, int heladera_id);
 
     long cantColaboradores();
 

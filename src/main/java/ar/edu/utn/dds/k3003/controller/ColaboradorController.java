@@ -131,14 +131,16 @@ public class ColaboradorController {
     public void arreglarHeladera(Context context) {
         var incidente_id = context.pathParamAsClass("id_incidente", Long.class).get();
         Long colaboradorId = context.bodyAsClass(ArreglarHeladeraRequest.class).getColaborador_id();
-        //try {
+        try {
             this.fachada.registrarArreglo(incidente_id,colaboradorId);
             Map<String, Object> response = new HashMap<>();
             response.put("Mensaje", "Heladera arreglada correctametne");
             context.status(200).json(response);
-        //} catch (Exception e) {
-            //throw new BadRequestResponse("Error de solicitud.");
-        //}
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("Mensaje", e.getMessage());
+            context.status(404).json(response);
+        }
     }
     public void suscripcionAPocasViandas(Context context){
         var id = context.pathParamAsClass("colaboradorId", Long.class).get();
@@ -162,9 +164,10 @@ public class ColaboradorController {
         try {
             int heladera_id = context.bodyAsClass(SuscripcionCantViandasRequest.class).getHeladera_id();
             int cantViandas = context.bodyAsClass(SuscripcionCantViandasRequest.class).getCantidadViandas();
-            this.fachada.suscribirseAFaltanViandas(id,heladera_id,cantViandas);
+            SuscripcionHeladera suscripcion = this.fachada.suscribirseAFaltanViandas(id,heladera_id,cantViandas);
             Map<String, Object> response = new HashMap<>();
             response.put("Mensaje", "Suscripcion registrada correctamente");
+            response.put("Suscripcion ID", suscripcion.getId());
             context.status(200).json(response);
         }catch (Exception e){
             throw new BadRequestResponse("Error de solicitud.");
@@ -176,9 +179,10 @@ public class ColaboradorController {
         var id = context.pathParamAsClass("colaboradorId", Long.class).get();
         try{
             int heladera_id = context.bodyAsClass(SuscripcionADesperfectoRequest.class).getHeladera_id();
-            this.fachada.suscribirseADesperfecto(id,heladera_id);
+            SuscripcionHeladera suscripcion = this.fachada.suscribirseADesperfecto(id,heladera_id);
             Map<String, Object> response = new HashMap<>();
             response.put("Mensaje", "Suscripcion registrada correctamente");
+            response.put("Suscripcion ID", suscripcion.getId());
             context.status(200).json(response);
         } catch (Exception e) {
             throw new BadRequestResponse("Error de solicitud.");

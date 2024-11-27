@@ -33,9 +33,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
+import javax.json.*;
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
@@ -238,6 +236,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                      formasPorUsuario.put(chatId,seleccionTransportador);
                      break;
                  case "confirmar_forma_colaborar":
+                     if (!formasPorUsuario.containsKey(chatId)) break; // si tocas confirmar sin seleccionar ninguna forma
                      modificarFormas(formasPorUsuario.get(chatId),chatId);
                      //if (!userState.containsKey(chatId)) break;
                      if(userState.get(chatId).equalsIgnoreCase("nombreInput")){
@@ -320,6 +319,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                      break;
              }
 
+
          }
 
 
@@ -332,7 +332,24 @@ public class TelegramBot extends TelegramLongPollingBot {
         HttpGet httpGet = new HttpGet(apiColaboradores+"/incidentes");
         HttpResponse execute = httpClient.execute(httpGet);
         String rta = IOUtils.toString(execute.getEntity().getContent(), StandardCharsets.UTF_8);
-        sendMessage(chatId,rta);
+        JsonReader jsonReader = Json.createReader(new StringReader(rta));
+        JsonArray root = jsonReader.readArray();
+        jsonReader.close();
+        sendMessage(chatId,"Los incidentes actuales son:");
+        for(int i = 0; i<root.size();i++){
+            JsonObject elemento = root.getJsonObject(i);
+            int id = elemento.getInt("id");
+            int heladeraId = elemento.getInt("heladeraId");
+            String fechaIncidente = elemento.getString("fechaIncidente");
+            String tipoIncidente = elemento.getString("tipoIncidente");
+            String estado = elemento.getString("estado");
+
+            // Construir el mensaje con la información extraída
+            String mensaje = String.format("\uD83D\uDC40 Incidente:\n\uD83D\uDC49 ID: %d\n❄\uFE0F Heladera ID: %d\n\uD83D\uDCC5 Fecha: %s\n⚠\uFE0F Tipo: %s\n\uD83D\uDCDC Estado: %s",
+                    id, heladeraId, fechaIncidente, tipoIncidente, estado);
+            sendMessage(chatId,mensaje);
+        }
+
     }
 
     private void agregarVianda(String chatId, String codigoQR) throws IOException {
@@ -365,7 +382,32 @@ public class TelegramBot extends TelegramLongPollingBot {
 
         HttpResponse execute = httpClient.execute(httpGet);
         String rta = IOUtils.toString(execute.getEntity().getContent(), StandardCharsets.UTF_8);
-        sendMessage(chatId,rta);
+
+
+        JsonReader jsonReader = Json.createReader(new StringReader(rta));
+        JsonObject root = jsonReader.readObject();
+        jsonReader.close();
+
+        // Extraer valores
+        JsonArray jsonArray = root.getJsonArray("formas");
+
+        Set<String> formas = new HashSet<>();
+        for (int i =  0; i < jsonArray.size(); i++) {
+            formas.add(jsonArray.get(i).toString().trim().replace("\"", ""));
+        }
+        System.out.println("asd");
+
+
+        String nombreColaborador = root.getString("nombre");
+        sendMessage(chatId, "ID Colaborador: " + chatId);
+        sendMessage(chatId, "Nombre Colaborador: " + nombreColaborador);
+        System.out.println(formas);
+        // ["TRANSPORTADOR", "TECNICO"]
+        mostrarFormasDeColaborar(chatId, formas);
+
+        Double puntos = (double) root.getInt("puntos");
+        sendMessage(chatId, "\uD83D\uDCAF Puntos de colaborador: " + puntos);
+        // {"id":7617688664,"nombre":"Federico","formas":["TECNICO","DONADOR_DINERO"]}
     }
 
     private void agregarFormaColaborar(SendMessage message){
@@ -401,9 +443,9 @@ public class TelegramBot extends TelegramLongPollingBot {
         List<InlineKeyboardButton> fila1 = new ArrayList<>();
         List<InlineKeyboardButton> fila2 = new ArrayList<>();
         List<InlineKeyboardButton> fila3 = new ArrayList<>();
-        fila1.add(createButton("Suscripción a quedan viandas","suscQuedan"));
-        fila2.add(createButton("Suscripción a faltan viandas","suscFaltan"));
-        fila3.add(createButton("Suscripción a desperfecto","suscDesperfecto"));
+        fila1.add(createButton("\uD83D\uDC49 Suscripción a quedan viandas","suscQuedan"));
+        fila2.add(createButton("\uD83D\uDC49 Suscripción a faltan viandas","suscFaltan"));
+        fila3.add(createButton("\uD83D\uDC49 Suscripción a desperfecto","suscDesperfecto"));
         filas.add(fila1);
         filas.add(fila2);
         filas.add(fila3);
@@ -415,32 +457,32 @@ public class TelegramBot extends TelegramLongPollingBot {
         InlineKeyboardMarkup markup= new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> filas = new ArrayList<>();
         List<InlineKeyboardButton> fila1 = new ArrayList<>();
-        fila1.add(createButton("Obtener datos","datosColaborador"));
+        fila1.add(createButton("Obtener datos \uD83D\uDCCA","datosColaborador"));
         filas.add(fila1);
         List<InlineKeyboardButton> fila2 = new ArrayList<>();
-        fila2.add(createButton("Cambiar formas de colaborar","formaColaborar"));
+        fila2.add(createButton("Cambiar formas de colaborar \uD83D\uDD04","formaColaborar"));
         filas.add(fila2);
         List<InlineKeyboardButton> fila3 = new ArrayList<>();
-        fila3.add(createButton("Reportar heladera","reportarHeladera"));
+        fila3.add(createButton("Reportar heladera \uD83E\uDDCA ⚠\uFE0F","reportarHeladera")); //🗄️
         filas.add(fila3);
         List<InlineKeyboardButton> fila4 = new ArrayList<>();
-        fila4.add(createButton("Ver Incidentes","verIncidentes"));
+        fila4.add(createButton("Ver Incidentes \uD83D\uDEA8","verIncidentes"));
         filas.add(fila4);
         List<InlineKeyboardButton> fila5 = new ArrayList<>();
-        fila5.add(createButton("Suscribirse a eventos de Heladera","suscribirseAHeladera"));
+        fila5.add(createButton("Suscribirse a eventos de Heladera \uD83E\uDDCA\uD83D\uDD14","suscribirseAHeladera"));
         filas.add(fila5);
         List<InlineKeyboardButton> fila6 = new ArrayList<>();
-        fila6.add(createButton("Cerrar una incidencia","cerrarIncidencia"));
+        fila6.add(createButton("Cerrar una incidencia \uD83D\uDEA8 \uD83D\uDD12","cerrarIncidencia"));
         filas.add(fila6);
         List<InlineKeyboardButton> fila7 = new ArrayList<>();
-        fila7.add(createButton("Ver mis traslados asignados","trasladosAsignados"));
+        fila7.add(createButton("Ver mis traslados asignados \uD83D\uDE9A\uD83D\uDCCB","trasladosAsignados"));
         filas.add(fila7);
 
         List<InlineKeyboardButton> fila8 = new ArrayList<>();
-        fila8.add(createButton("Ver suscripciones","verSuscripciones"));
+        fila8.add(createButton("Ver suscripciones \uD83D\uDD0D \uD83D\uDD14","verSuscripciones"));
         filas.add(fila8);
         List<InlineKeyboardButton> fila9 = new ArrayList<>();
-        fila9.add(createButton("Desuscribirse","desuscribirse"));
+        fila9.add(createButton("Desuscribirse ❌\uD83D\uDD14","desuscribirse"));
         filas.add(fila9);
 
         // Agregar botones: Ir al inicio, Salir capaz?
@@ -456,7 +498,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         InlineKeyboardMarkup markup= new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> filas = new ArrayList<>();
         List<InlineKeyboardButton> fila1 = new ArrayList<>();
-        fila1.add(createButton("Agregar vianda","agregarVianda"));
+        fila1.add(createButton("Agregar vianda \uD83C\uDF71","agregarVianda"));
         filas.add(fila1);
 
         // Agregar botones: Ir al inicio, Salir capaz?
@@ -472,7 +514,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         InlineKeyboardMarkup markup= new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> filas = new ArrayList<>();
         List<InlineKeyboardButton> fila1 = new ArrayList<>();
-        fila1.add(createButton("Ver ocupación de viandas","ocupacionViandas"));
+        fila1.add(createButton("Ver ocupación de viandas \uD83E\uDDCA \uD83C\uDF71","ocupacionViandas"));
         filas.add(fila1);
 
         // Agregar botones: Ir al inicio, Salir capaz?
@@ -488,27 +530,27 @@ public class TelegramBot extends TelegramLongPollingBot {
         InlineKeyboardMarkup markup= new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> filas = new ArrayList<>();
         List<InlineKeyboardButton> fila1 = new ArrayList<>();
-        fila1.add(createButton("Depositar vianda","depositarVianda"));
+        fila1.add(createButton("Depositar vianda \uD83C\uDF71 ➕","depositarVianda"));
         filas.add(fila1);
 
         List<InlineKeyboardButton> fila2 = new ArrayList<>();
-        fila2.add(createButton("Retirar vianda","retirarVianda"));
+        fila2.add(createButton("Retirar vianda \uD83C\uDF71 ➖","retirarVianda"));
         filas.add(fila2);
 
         List<InlineKeyboardButton> fila3 = new ArrayList<>();
-        fila3.add(createButton("Crear una ruta","crearRuta"));
+        fila3.add(createButton("Crear una ruta \uD83D\uDEE3\uFE0F","crearRuta"));
         filas.add(fila3);
 
         List<InlineKeyboardButton> fila4 = new ArrayList<>();
-        fila4.add(createButton("Depositar traslado","depositarTraslado"));
+        fila4.add(createButton("Depositar traslado  \uD83D\uDE9A ➕","depositarTraslado"));
         filas.add(fila4);
 
         List<InlineKeyboardButton> fila5 = new ArrayList<>();
-        fila5.add(createButton("Retirar traslado","retirarTraslado"));
+        fila5.add(createButton("Retirar traslado \uD83D\uDE9A ➖","retirarTraslado"));
         filas.add(fila5);
 
         List<InlineKeyboardButton> fila6 = new ArrayList<>();
-        fila6.add(createButton("Retiros del dia","retirosDelDia"));
+        fila6.add(createButton("Retiros del dia \uD83D\uDCC5","retirosDelDia"));
         filas.add(fila6);
 
         // Agregar botones: Ir al inicio, Salir capaz?
@@ -539,6 +581,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
         HttpResponse execute = httpClient.execute(httpPost);
         String rta = IOUtils.toString(execute.getEntity().getContent(), StandardCharsets.UTF_8);
+
         sendMessage(chatId,rta);
     }
 
@@ -632,13 +675,14 @@ public class TelegramBot extends TelegramLongPollingBot {
         httpPatch.setHeader("Content-Type","application/json");
         HttpResponse execute = httpClient.execute(httpPatch);
         String rta = IOUtils.toString(execute.getEntity().getContent(), StandardCharsets.UTF_8);
-        sendMessage(chatId, "Tus formas de colaborar son:");
+
         mostrarFormasDeColaborar(chatId, formasLista);
         formasPorUsuario.remove(chatId);
 
     }
 
     private void mostrarFormasDeColaborar(String chatId, Set<String> formasLista) {
+        sendMessage(chatId, "Tus formas de colaborar son:");
         for (String forma : formasLista) {
             switch (forma) {
                 case "TRANSPORTADOR":
@@ -663,7 +707,13 @@ public class TelegramBot extends TelegramLongPollingBot {
 
         HttpResponse execute = httpClient.execute(httpPost);
         String rta = IOUtils.toString(execute.getEntity().getContent(), StandardCharsets.UTF_8);
-        sendMessage(chatId,rta);
+        JsonReader jsonReader = Json.createReader(new StringReader(rta));
+        JsonObject root = jsonReader.readObject();
+        jsonReader.close();
+
+        String formateado = root.getString("Mensaje");
+
+        sendMessage(chatId, "⚠\uFE0F\uD83D\uDC4D " + formateado);
     }
 
     public void mostrarMenuPrincipal(String chatId){
@@ -676,10 +726,10 @@ public class TelegramBot extends TelegramLongPollingBot {
         List<InlineKeyboardButton> fila2 = new ArrayList<>();
         List<InlineKeyboardButton> fila3 = new ArrayList<>();
         List<InlineKeyboardButton> fila4 = new ArrayList<>();
-        fila1.add(createButton("Sección colaboradores","colaboradores"));
-        fila2.add(createButton("Sección Heladeras","heladeras"));
-        fila3.add(createButton("Sección Logistica","logistica"));
-        fila4.add(createButton("Sección Viandas","viandas"));
+        fila1.add(createButton("Sección colaboradores \uD83D\uDC65","colaboradores"));
+        fila2.add(createButton("Sección Heladeras \uD83E\uDDCA","heladeras"));
+        fila3.add(createButton("Sección Logistica \uD83D\uDE9A","logistica"));
+        fila4.add(createButton("Sección Viandas \uD83C\uDF71","viandas"));
         filas.add(fila1);
         filas.add(fila2);
         filas.add(fila3);
@@ -709,7 +759,17 @@ public class TelegramBot extends TelegramLongPollingBot {
         httpPut.setHeader("Content-Type","application/json");
         HttpResponse execute = httpClient.execute(httpPut);
         String rta = IOUtils.toString(execute.getEntity().getContent(), StandardCharsets.UTF_8);
-        sendMessage(chatId,rta);
+
+        //asd
+        JsonReader jsonReader = Json.createReader(new StringReader(rta));
+        JsonObject root = jsonReader.readObject();
+        jsonReader.close();
+
+        String mensaje = root.getString("Mensaje");
+        int idSuscripcion = root.getInt("Suscripcion ID");
+
+        sendMessage(chatId, "✔️ " + "Suscripción a quedan " + valorNotificaion + " viandas registrada correctamente.");
+        sendMessage(chatId, "\uD83D\uDC49 ID de la suscripción: " + idSuscripcion);
     }
 
     @SneakyThrows
@@ -726,7 +786,15 @@ public class TelegramBot extends TelegramLongPollingBot {
         httpPut.setHeader("Content-Type","application/json");
         HttpResponse execute = httpClient.execute(httpPut);
         String rta = IOUtils.toString(execute.getEntity().getContent(), StandardCharsets.UTF_8);
-        sendMessage(chatId,rta);
+        JsonReader jsonReader = Json.createReader(new StringReader(rta));
+        JsonObject root = jsonReader.readObject();
+        jsonReader.close();
+
+        String mensaje = root.getString("Mensaje");
+        int idSuscripcion = root.getInt("Suscripcion ID");
+
+        sendMessage(chatId, "✔️ " + "Suscripción a faltan " + valorNotificaion + " viandas registrada correctamente.");
+        sendMessage(chatId, "\uD83D\uDC49 ID de la suscripción: " + idSuscripcion);
     }
 
     @SneakyThrows
@@ -743,7 +811,15 @@ public class TelegramBot extends TelegramLongPollingBot {
         httpPut.setHeader("Content-Type","application/json");
         HttpResponse execute = httpClient.execute(httpPut);
         String rta = IOUtils.toString(execute.getEntity().getContent(), StandardCharsets.UTF_8);
-        sendMessage(chatId,rta);
+        JsonReader jsonReader = Json.createReader(new StringReader(rta));
+        JsonObject root = jsonReader.readObject();
+        jsonReader.close();
+
+        String mensaje = root.getString("Mensaje");
+        int idSuscripcion = root.getInt("Suscripcion ID");
+
+        sendMessage(chatId, "✔️ " + "Suscripción a desperfectos registrada correctamente.");
+        sendMessage(chatId, "\uD83D\uDC49 ID de la suscripción: " + idSuscripcion);
     }
 
     @SneakyThrows
@@ -757,7 +833,11 @@ public class TelegramBot extends TelegramLongPollingBot {
         httpPost.setHeader("Content-Type","application/json");
         HttpResponse execute = httpClient.execute(httpPost);
         String rta = IOUtils.toString(execute.getEntity().getContent(), StandardCharsets.UTF_8);
-        sendMessage(chatId,rta);
+        JsonReader jsonReader = Json.createReader(new StringReader(rta));
+        JsonObject root = jsonReader.readObject();
+        jsonReader.close();
+        String formateado = root.getString("Mensaje");
+        sendMessage(chatId, formateado);
     }
 
     @SneakyThrows
@@ -785,7 +865,32 @@ public class TelegramBot extends TelegramLongPollingBot {
         // https://viandas-u5sx.onrender.com/viandas/search/findByColaboradorIdAndAnioAndMes?colaboradorId=1&anio=2024&mes=10
         HttpResponse execute = httpClient.execute(httpGet);
         String rta = IOUtils.toString(execute.getEntity().getContent(), StandardCharsets.UTF_8);
-        sendMessage(chatId,rta);
+        JsonReader jsonReader = Json.createReader(new StringReader(rta));
+        JsonObject root = jsonReader.readObject();
+        jsonReader.close();
+        JsonValue mensaje = root.get("Mensaje");
+        if(mensaje.getValueType()== JsonValue.ValueType.ARRAY){
+            JsonArray array = root.getJsonArray("Mensaje");
+
+            for(JsonObject elem:array.getValuesAs(JsonObject.class)){
+                String id = elem.getJsonNumber("id").toString();
+                String qrVianda = elem.getString("qrVianda");
+                String status = elem.getString("status");
+                String fechaTraslado = elem.getString("fechaTraslado");
+                String heladeraOrigen = elem.getJsonNumber("heladeraOrigen").toString();
+                String heladeraDestino = elem.getJsonNumber("heladeraDestino").toString();
+
+                sendMessage(chatId,"Traslado asigando:"+id+"\n"+"Estado del traslado:"+status+"\n"+"Fecha del traslado:"+fechaTraslado+"\n" +
+                        "QR de la vianda:"+qrVianda+"\n"+"Heladera origen:"+heladeraOrigen+"\n"+"Heladera destino:"+heladeraDestino+".");
+            }
+        }else if(mensaje.getValueType()== JsonValue.ValueType.STRING){
+            String mensajeError = root.getString("Mensaje");
+            sendMessage(chatId,mensajeError);
+        }else{
+            sendMessage(chatId, "Error: Error al procesar la respuesta de servidor.");
+        }
+
+
     }
 
     @SneakyThrows
@@ -794,7 +899,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         HttpDelete httpDelete = new HttpDelete(apiColaboradores+"/suscripcion/"+suscripcionId.toString());
         HttpResponse execute = httpClient.execute(httpDelete);
         String rta = IOUtils.toString(execute.getEntity().getContent(), StandardCharsets.UTF_8);
-        sendMessage(chatId,rta);
+
+        sendMessage(chatId, "✅ Desuscripción registrada correctamente.");
     }
 
     @SneakyThrows

@@ -85,7 +85,9 @@ public class Fachada implements FachadaColaboradores {
     @Override
     public ColaboradorDTOActualizado buscarXId(Long colaboradorId) throws NoSuchElementException {
         Colaborador colaborador = this.colaboradorRepository.findById(colaboradorId);
-        return colaboradorMapper.map(colaborador);
+        ColaboradorDTOActualizado colaboradorDTO = colaboradorMapper.map(colaborador);
+        colaboradorDTO.setPuntos(puntos(colaboradorId));
+        return colaboradorDTO;
     }
 
 
@@ -145,20 +147,23 @@ public class Fachada implements FachadaColaboradores {
         return suscripcion;
     }
 
-    public void suscribirseAFaltanViandas(Long colaborador_id, int heladera_id, int viandasDisponibles){
+    public SuscripcionHeladera suscribirseAFaltanViandas(Long colaborador_id, int heladera_id, int viandasDisponibles){
         Colaborador colaborador = colaboradorRepository.findById(colaborador_id);
         SuscripcionHeladera suscripcion = new SuscripcionHeladera(colaborador,heladera_id,-1,viandasDisponibles,false,"FaltanViandas");
         this.suscripcionRepository.save(suscripcion);
         colaborador.suscribirseAHeladera(suscripcion);
         this.fachadaHeladeras.agregarSuscriptor(colaborador_id,heladera_id,-1,viandasDisponibles,false);
+
+        return suscripcion;
     }
 
-    public void suscribirseADesperfecto(Long colaborador_id, int heladera_id){
+    public SuscripcionHeladera suscribirseADesperfecto(Long colaborador_id, int heladera_id){
         Colaborador colaborador = colaboradorRepository.findById(colaborador_id);
         SuscripcionHeladera suscripcion = new SuscripcionHeladera(colaborador,heladera_id,-1,-1,true,"Desperfecto");
         this.suscripcionRepository.save(suscripcion);
         colaborador.suscribirseAHeladera(suscripcion);
         this.fachadaHeladeras.agregarSuscriptor(colaborador_id,heladera_id,-1,-1,true);
+        return suscripcion;
     }
 
     public long cantColaboradores() {
