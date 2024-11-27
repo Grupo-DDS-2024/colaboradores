@@ -102,6 +102,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 case "codigoQR":
                     String codigoQR = update.getMessage().getText();
                     agregarVianda(chatId, codigoQR);
+                    continuarAgregarVianda(chatId);
                     break;
                 case "suscQuedan":
                     String[] partes = update.getMessage().getText().split(";",2);
@@ -313,6 +314,10 @@ public class TelegramBot extends TelegramLongPollingBot {
                  case "retirosDelDia":
                      retirosDelDia(chatId);
                      break;
+
+                 case "menuPrincipal":
+                     mostrarMenuPrincipal(chatId);
+                     break;
                  default:
                      message.setText("Opcion no reconocida");
                      execute(message);
@@ -351,7 +356,26 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
 
     }
+    private void continuarAgregarVianda(String chatId) throws TelegramApiException {
+        InlineKeyboardMarkup markup= new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> filas = new ArrayList<>();
+        List<InlineKeyboardButton> fila1 = new ArrayList<>();
+        fila1.add(createButton("\uD83C\uDF71 Agregar otra vianda","agregarVianda"));
+        filas.add(fila1);
+        List<InlineKeyboardButton> fila2 = new ArrayList<>();
+        fila2.add(createButton("\uD83C\uDFE0 Volver al menú","menuPrincipal"));
+        filas.add(fila2);
 
+        // Agregar botones: Ir al inicio, Salir capaz?
+
+        markup.setKeyboard(filas);
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText("Selecciona ");
+        message.setReplyMarkup(markup);
+        execute(message);
+
+    }
     private void agregarVianda(String chatId, String codigoQR) throws IOException {
         HttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(apiViandas + "/viandas");
@@ -370,7 +394,20 @@ public class TelegramBot extends TelegramLongPollingBot {
 
         HttpResponse execute = httpClient.execute(httpPost);
         String rta = IOUtils.toString(execute.getEntity().getContent(), StandardCharsets.UTF_8);
-        sendMessage(chatId,rta);
+        if (execute.getStatusLine().getStatusCode() == 400){
+            sendMessage(chatId, rta);
+            return;
+        }
+        JsonReader jsonReader = Json.createReader(new StringReader(rta));
+        JsonObject root = jsonReader.readObject();
+        jsonReader.close();
+
+        int idVianda = root.getInt("id");
+        String fechaElaboracion = root.getString("fechaElaboracion");
+        String estadoVianda = root.getString("estado");
+        // {"id":1,"codigoQR":"qr55","fechaElaboracion":"2024-11-27T18:49:46Z","estado":"PREPARADA","colaboradorId":7617688664,"heladeraId":null}
+
+        sendMessage(chatId, "✅ Vianda agregada correctamente\n\uD83D\uDC49 ID Vianda: "+idVianda+"\n\uD83D\uDCC5 Fecha de elaboración: "+fechaElaboracion+"\n\uD83D\uDCA1 Estado: " + estadoVianda);
     }
 
     private void consultarPuntos(String chatId) throws IOException {
@@ -485,6 +522,10 @@ public class TelegramBot extends TelegramLongPollingBot {
         fila9.add(createButton("Desuscribirse ❌\uD83D\uDD14","desuscribirse"));
         filas.add(fila9);
 
+        List<InlineKeyboardButton> fila10 = new ArrayList<>();
+        fila10.add(createButton("\uD83C\uDFE0 Volver al menú","menuPrincipal"));
+        filas.add(fila10);
+
         // Agregar botones: Ir al inicio, Salir capaz?
 
         markup.setKeyboard(filas);
@@ -501,6 +542,10 @@ public class TelegramBot extends TelegramLongPollingBot {
         fila1.add(createButton("Agregar vianda \uD83C\uDF71","agregarVianda"));
         filas.add(fila1);
 
+        List<InlineKeyboardButton> fila2 = new ArrayList<>();
+        fila2.add(createButton("\uD83C\uDFE0 Volver al menú","menuPrincipal"));
+        filas.add(fila2);
+
         // Agregar botones: Ir al inicio, Salir capaz?
 
         markup.setKeyboard(filas);
@@ -516,6 +561,10 @@ public class TelegramBot extends TelegramLongPollingBot {
         List<InlineKeyboardButton> fila1 = new ArrayList<>();
         fila1.add(createButton("Ver ocupación de viandas \uD83E\uDDCA \uD83C\uDF71","ocupacionViandas"));
         filas.add(fila1);
+
+        List<InlineKeyboardButton> fila2 = new ArrayList<>();
+        fila2.add(createButton("\uD83C\uDFE0 Volver al menú","menuPrincipal"));
+        filas.add(fila2);
 
         // Agregar botones: Ir al inicio, Salir capaz?
 
@@ -552,6 +601,10 @@ public class TelegramBot extends TelegramLongPollingBot {
         List<InlineKeyboardButton> fila6 = new ArrayList<>();
         fila6.add(createButton("Retiros del dia \uD83D\uDCC5","retirosDelDia"));
         filas.add(fila6);
+
+        List<InlineKeyboardButton> fila7 = new ArrayList<>();
+        fila7.add(createButton("\uD83C\uDFE0 Volver al menú","menuPrincipal"));
+        filas.add(fila7);
 
         // Agregar botones: Ir al inicio, Salir capaz?
 
