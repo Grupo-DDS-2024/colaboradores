@@ -40,8 +40,15 @@ public class Transportador implements FormaDeColaborar{
     public Double calcularPuntos(Long colaboradorId) {
         Integer mesActual = LocalDateTime.now().getMonthValue();
         Integer anioActual = LocalDateTime.now().getYear();
-        List<TrasladoDTO> trasladosDTO = fachadaLogistica.trasladosDeColaborador(colaboradorId, mesActual, anioActual);
-        int traslados = trasladosDTO.size();
+        int traslados;
+        try{
+            List<TrasladoDTO> trasladosDTO = fachadaLogistica.trasladosDeColaborador(colaboradorId, mesActual, anioActual);
+             traslados = trasladosDTO.size();
+        }catch (Exception e){
+            traslados = 0;
+        }
+
+
 
         return coeficiente * traslados;
     }

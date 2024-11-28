@@ -87,6 +87,7 @@ public class Fachada implements FachadaColaboradores {
         Colaborador colaborador = this.colaboradorRepository.findById(colaboradorId);
         ColaboradorDTOActualizado colaboradorDTO = colaboradorMapper.map(colaborador);
         colaboradorDTO.setPuntos(puntos(colaboradorId));
+        System.out.println(colaboradorDTO);
         return colaboradorDTO;
     }
 
@@ -242,7 +243,7 @@ public class Fachada implements FachadaColaboradores {
     }
 
     public void notificar(Long id, TipoNotificacionEnum tipo, Integer heladeraId){
-        bot.sendMessage(id.toString(),"Se detecto un evento de tipo: "+ tipo.toString()+ ", de la heladera: "+heladeraId.toString());
+        bot.sendMessage(id.toString(),"⚠\uFE0F Se detecto un evento de tipo: "+ tipo.toString()+ ", de la heladera: "+heladeraId.toString());
     }
 
     public void notificarTraslado(TrasladoDTO trasladoDTO){

@@ -98,6 +98,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 case "id_heladera":
                     Integer id_heladera = Integer.parseInt(update.getMessage().getText());
                     reportarHeladera(chatId,id_heladera);
+                    mostrarMenuColaboradores(chatId);
                     break;
                 case "codigoQR":
                     String codigoQR = update.getMessage().getText();
@@ -109,16 +110,19 @@ public class TelegramBot extends TelegramLongPollingBot {
                     Integer heladeraId = Integer.parseInt(partes[0].trim());
                     Integer valor = Integer.parseInt(partes[1].trim());
                     suscQuedan(chatId,heladeraId,valor);
+                    mostrarMenuColaboradores(chatId);
                     break;
                 case "suscFaltan":
                     String[] partesFaltan = update.getMessage().getText().split(";",2);
                     Integer heladeraIdFaltan = Integer.parseInt(partesFaltan[0].trim());
                     Integer valorFaltan = Integer.parseInt(partesFaltan[1].trim());
                     suscFaltan(chatId,heladeraIdFaltan,valorFaltan);
+                    mostrarMenuColaboradores(chatId);
                     break;
                 case "suscDesperfecto":
                     Integer id_heladeraSusc = Integer.parseInt(update.getMessage().getText());
                     suscDesperfectos(chatId,id_heladeraSusc);
+                    mostrarMenuColaboradores(chatId);
                     break;
                 case "ocupacionViandas":
                     Integer id_heladeraOcupacion = Integer.parseInt(update.getMessage().getText());
@@ -128,38 +132,45 @@ public class TelegramBot extends TelegramLongPollingBot {
                 case "incidencia_id":
                     Integer id_incidente = Integer.parseInt(update.getMessage().getText());
                     cerrarIncidencia(chatId,id_incidente);
+                    mostrarMenuColaboradores(chatId);
                     break;
                 case "depositarVianda":
                     String[] partesDepositar = update.getMessage().getText().split(";",2);
                     String codigoQRDepositar = partesDepositar[0].trim();
                     Integer heladeraIdDepositar = Integer.parseInt(partesDepositar[1].trim());
                     depositarVianda(chatId,codigoQRDepositar,heladeraIdDepositar);
+                    mostrarMenuLogistica(chatId);
                     break;
                 case "retirarVianda":
                     String[] partesRetirar = update.getMessage().getText().split(";",2);
                     String codigoQRRetirar = partesRetirar[0].trim();
                     Integer heladeraIdRetirar = Integer.parseInt(partesRetirar[1].trim());
                     retirarVianda(chatId,codigoQRRetirar,heladeraIdRetirar);
+                    mostrarMenuLogistica(chatId);
                     break;
                 case "crearRuta":
                     String[] partesRuta = update.getMessage().getText().split(";",2);
                     Integer heladeraOrigen = Integer.parseInt(partesRuta[0].trim());
                     Integer heladeraDestino = Integer.parseInt(partesRuta[1].trim());
                     crearRuta(chatId,heladeraOrigen,heladeraDestino);
+                    mostrarMenuLogistica(chatId);
                     break;
 
                 case "depositarTraslado":
                     Long idTrasladoDepositar = Long.parseLong(update.getMessage().getText());
                     depositarTraslado(chatId, idTrasladoDepositar);
+                    mostrarMenuLogistica(chatId);
                     break;
 
                 case "retirarTraslado":
                     Long idTrasladoRetirar = Long.parseLong(update.getMessage().getText());
                     retirarTraslado(chatId, idTrasladoRetirar);
+                    mostrarMenuLogistica(chatId);
                     break;
                 case "desuscribirse":
                     Integer idSuscripcion = Integer.parseInt(update.getMessage().getText());
                     desuscribirse(chatId,idSuscripcion);
+                    mostrarMenuColaboradores(chatId);
                     break;
                 case "nombreInput":
                     String nombre = update.getMessage().getText().trim();
@@ -206,6 +217,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                      break;
                  case "datosColaborador":
                      this.consultarPuntos(chatId);
+                     mostrarMenuColaboradores(chatId);
                      break;
 
                  case "formaColaborar":
@@ -243,6 +255,8 @@ public class TelegramBot extends TelegramLongPollingBot {
                      //if (!userState.containsKey(chatId)) break;
                      if(userState.get(chatId).equalsIgnoreCase("nombreInput")){
                          mostrarMenuPrincipal(chatId);
+                     }else{
+                         mostrarMenuColaboradores(chatId);
                      }
                      break;
 
@@ -252,6 +266,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                      break;
                  case "verIncidentes":
                      verIncidentes(chatId);
+                     mostrarMenuColaboradores(chatId);
                      break;
                  case "agregarVianda":
                      userState.put(chatId,"codigoQR");
@@ -303,10 +318,12 @@ public class TelegramBot extends TelegramLongPollingBot {
                      break;
                  case "trasladosAsignados":
                      trasladosAsignados(chatId);
+                     mostrarMenuColaboradores(chatId);
                      break;
 
                  case "verSuscripciones":
                      verSuscripciones(chatId);
+                     mostrarMenuColaboradores(chatId);
                      break;
                  case "desuscribirse":
                      userState.put(chatId,"desuscribirse");
@@ -314,6 +331,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                      break;
                  case "retirosDelDia":
                      retirosDelDia(chatId);
+                     mostrarMenuLogistica(chatId);
                      break;
 
                  case "menuPrincipal":
@@ -455,12 +473,12 @@ public class TelegramBot extends TelegramLongPollingBot {
         for (int i =  0; i < jsonArray.size(); i++) {
             formas.add(jsonArray.get(i).toString().trim().replace("\"", ""));
         }
-        System.out.println("asd");
+
 
 
         String nombreColaborador = root.getString("nombre");
-        sendMessage(chatId, "ID Colaborador: " + chatId);
-        sendMessage(chatId, "Nombre Colaborador: " + nombreColaborador);
+        sendMessage(chatId, "\uD83D\uDC49 ID Colaborador: " + chatId);
+        sendMessage(chatId, "\uD83E\uDDD1 Nombre Colaborador: " + nombreColaborador);
         System.out.println(formas);
         // ["TRANSPORTADOR", "TECNICO"]
         mostrarFormasDeColaborar(chatId, formas);
@@ -657,8 +675,12 @@ public class TelegramBot extends TelegramLongPollingBot {
 
         HttpResponse execute = httpClient.execute(httpPost);
         String rta = IOUtils.toString(execute.getEntity().getContent(), StandardCharsets.UTF_8);
+        if (execute.getStatusLine().getStatusCode() == 400){
+            sendMessage(chatId, "❌ " + rta);
+            return;
+        }
 
-        sendMessage(chatId,rta);
+        sendMessage(chatId, "✅ Vianda '"+codigoQRDepositar+"' depositada correctamente en heladera " +heladeraIdDepositar);
     }
 
     private void retirarVianda(String chatId, String codigoQRRetirar, int heladeraIdRetirar) throws IOException {
@@ -822,6 +844,22 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
+    public void mostrarMenuLogistica(String chatId) throws TelegramApiException {
+        SendMessage msg = new SendMessage();
+        msg.setText("Selecciona ");
+        msg.setChatId(chatId);
+        this.botonesLogistica(msg);
+        execute(msg);
+    }
+
+    public void mostrarMenuColaboradores(String chatId) throws TelegramApiException {
+        SendMessage msg = new SendMessage();
+        msg.setText("Selecciona ");
+        msg.setChatId(chatId);
+        this.botonesColaboradores(msg);
+        execute(msg);
+    }
+
     @SneakyThrows
     private void suscQuedan(String chatId, Integer heladeraId, Integer valorNotificaion){
         Long idColaborador = fachada.obtenerIdColaborador(chatId);
@@ -927,8 +965,23 @@ public class TelegramBot extends TelegramLongPollingBot {
         httpPost.setEntity(entity);
         httpPost.setHeader("Content-Type","application/json");
         HttpResponse execute = httpClient.execute(httpPost);
+
         String rta = IOUtils.toString(execute.getEntity().getContent(), StandardCharsets.UTF_8);
-        sendMessage(chatId,rta);
+        if(execute.getStatusLine().getStatusCode()==400){
+            sendMessage(chatId, "No se pudo agregar la ruta ❌");
+            return;
+        }
+        if(execute.getStatusLine().getStatusCode()==200){
+
+            JsonReader jsonReader = Json.createReader(new StringReader(rta));
+            JsonObject root = jsonReader.readObject();
+            jsonReader.close();
+            String formateado = "Se creo la ruta entre la heladera: "+ root.getInt("heladeraIdOrigen")+ " y la heladera: "+root.getInt("heladeraIdDestino")+
+                    " exitosamente ✔\uFE0F";
+            sendMessage(chatId,formateado);
+        }
+
+
     }
 
     @SneakyThrows

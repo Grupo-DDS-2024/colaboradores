@@ -58,7 +58,7 @@ public class LogisticaProxy implements FachadaLogistica {
         if (execute.isSuccessful()) {
             return execute.body();
         }
-        if (execute.code() == 500) {
+        if (execute.code() == 404) {
             throw new NoSuchElementException("No se encontraron traslados del colaborador " + colaboradorId);
         }
         throw new RuntimeException("Error al conectarse con el componente Logistica");
