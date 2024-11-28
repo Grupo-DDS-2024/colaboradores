@@ -229,8 +229,10 @@ public class Fachada implements FachadaColaboradores {
         this.fachadaHeladeras.reportarDesperfecto(heladeraId);
     }
     public void registrarIncidente(int heladera_id, TipoIncidenteEnum tipo, EstadoIncidenteEnum estado){
-        Incidentes incidentes = new Incidentes(heladera_id, LocalDateTime.now(),tipo,estado);
-        this.incidentesRepository.save(incidentes);
+        if(!incidentesRepository.existeIncidente(heladera_id,estado)){
+            Incidentes incidentes = new Incidentes(heladera_id, LocalDateTime.now(),tipo,estado);
+            this.incidentesRepository.save(incidentes);
+        }
     }
 
     public Long obtenerIdColaborador(String chatId) {

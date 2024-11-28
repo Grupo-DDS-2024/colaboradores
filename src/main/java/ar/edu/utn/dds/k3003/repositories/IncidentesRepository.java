@@ -2,6 +2,7 @@ package ar.edu.utn.dds.k3003.repositories;
 
 import ar.edu.utn.dds.k3003.model.Clases.Colaborador;
 import ar.edu.utn.dds.k3003.model.Clases.Incidentes;
+import ar.edu.utn.dds.k3003.model.Enums.EstadoIncidenteEnum;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -57,5 +58,17 @@ public class IncidentesRepository {
         entityManager.getTransaction().commit();
         entityManager.close();
         return incidentes;
+    }
+
+    public boolean existeIncidente(Integer heladeraId, EstadoIncidenteEnum estado){
+        EntityManager entityManager = this.entityManagerFactory.createEntityManager();
+        entityManager.getTransaction().begin();
+
+        Long count = (Long) entityManager.createQuery("SELECT COUNT(i) FROM Incidentes i WHERE i.heladeraId = :heladeraId " +
+                "AND i.estado = :estado").setParameter("heladeraId",heladeraId).setParameter("estado",estado).getSingleResult();
+
+        entityManager.getTransaction().commit();
+        entityManager.close();
+        return count > 0;
     }
 }
