@@ -44,10 +44,10 @@ import java.util.stream.Collectors;
 
 public class TelegramBot extends TelegramLongPollingBot {
 
-    private String apiColaboradores = "http://localhost:8082";
-    private String apiHeladeras = "http://localhost:8080";
-    private String apiLogistica = "http://localhost:8083";
-    private String apiViandas = "http://localhost:8081";
+    private String apiColaboradores = System.getenv().getOrDefault("API_COLABORADORES", "http://localhost:8082");
+    private String apiHeladeras = System.getenv().getOrDefault("API_HELADERAS", "http://localhost:8080");
+    private String apiLogistica = System.getenv().getOrDefault("API_LOGISTICA", "http://localhost:8083");
+    private String apiViandas = System.getenv().getOrDefault("API_VIANDAS", "http://localhost:8081");
     private Fachada fachada;
     private Map<String, Set<FormaDeColaborarActualizadoEnum>> formasPorUsuario;
     private Map<String, String> userState;
@@ -806,6 +806,11 @@ public class TelegramBot extends TelegramLongPollingBot {
 
         HttpResponse execute = httpClient.execute(httpPost);
         String rta = IOUtils.toString(execute.getEntity().getContent(), StandardCharsets.UTF_8);
+
+        if (execute.getStatusLine().getStatusCode() == 400) { // la heladera reportada no existe
+            sendMessage(chatId, "❌ No existe la heladera " + heladeraId);
+            return;
+        }
         JsonReader jsonReader = Json.createReader(new StringReader(rta));
         JsonObject root = jsonReader.readObject();
         jsonReader.close();

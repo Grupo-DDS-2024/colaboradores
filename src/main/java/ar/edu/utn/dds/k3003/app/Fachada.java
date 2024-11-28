@@ -14,6 +14,7 @@ import ar.edu.utn.dds.k3003.model.DTOs.ColaboradorDTOActualizado;
 import ar.edu.utn.dds.k3003.model.formaDeColaborar.FormaDeColaborarActualizadoEnum;
 import ar.edu.utn.dds.k3003.model.formaDeColaborar.*;
 import ar.edu.utn.dds.k3003.repositories.*;
+import io.javalin.http.BadRequestResponse;
 import lombok.Getter;
 import lombok.Setter;
 

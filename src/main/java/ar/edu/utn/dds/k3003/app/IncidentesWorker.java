@@ -3,6 +3,7 @@ package ar.edu.utn.dds.k3003.app;
 import ar.edu.utn.dds.k3003.model.Enums.EstadoIncidenteEnum;
 import ar.edu.utn.dds.k3003.model.Enums.TipoIncidenteEnum;
 import com.rabbitmq.client.*;
+import io.javalin.http.BadRequestResponse;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -64,7 +65,7 @@ public class IncidentesWorker extends DefaultConsumer {
 
         int heladeraId = Integer.parseInt(valores.get("heladera_id"));
         TipoIncidenteEnum tipo = TipoIncidenteEnum.buscarEnum(Integer.parseInt(valores.get("tipo")));
-        this.fachada.registrarIncidente(heladeraId,tipo, EstadoIncidenteEnum.NO_REPARADO);
+        this.fachada.registrarIncidente(heladeraId, tipo, EstadoIncidenteEnum.NO_REPARADO);
 
 
 
