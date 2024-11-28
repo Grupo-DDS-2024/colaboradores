@@ -123,6 +123,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 case "ocupacionViandas":
                     Integer id_heladeraOcupacion = Integer.parseInt(update.getMessage().getText());
                     obtenerOcupacionHeladeras(chatId, id_heladeraOcupacion);
+                    continuarOcupacionHeladeras(chatId);
                     break;
                 case "incidencia_id":
                     Integer id_incidente = Integer.parseInt(update.getMessage().getText());
@@ -376,6 +377,28 @@ public class TelegramBot extends TelegramLongPollingBot {
         execute(message);
 
     }
+
+    private void continuarOcupacionHeladeras(String chatId) throws TelegramApiException {
+        InlineKeyboardMarkup markup= new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> filas = new ArrayList<>();
+        List<InlineKeyboardButton> fila1 = new ArrayList<>();
+        fila1.add(createButton("\uD83E\uDDCA \uD83C\uDF71 Ver ocupación de otra heladera","ocupacionViandas"));
+        filas.add(fila1);
+        List<InlineKeyboardButton> fila2 = new ArrayList<>();
+        fila2.add(createButton("\uD83C\uDFE0 Volver al menú","menuPrincipal"));
+        filas.add(fila2);
+
+        // Agregar botones: Ir al inicio, Salir capaz?
+
+        markup.setKeyboard(filas);
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText("Selecciona ");
+        message.setReplyMarkup(markup);
+        execute(message);
+
+    }
+
     private void agregarVianda(String chatId, String codigoQR) throws IOException {
         HttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(apiViandas + "/viandas");
@@ -697,7 +720,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         String rta = IOUtils.toString(execute.getEntity().getContent(), StandardCharsets.UTF_8);
         System.out.println(rta);
         if (execute.getStatusLine().getStatusCode() == 404) {
-            sendMessage(chatId,rta);
+            sendMessage(chatId,"❌ " + rta);
             return;
         }
         JsonReader jsonReader = Json.createReader(new StringReader(rta));
@@ -708,7 +731,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         int cantidadDeViandas = root.getJsonObject("HeladeraDTO").getInt("cantidadDeViandas");
         int heladeraViandasActuales = root.getInt("Heladera viandas actuales");
 
-        rta = "Capacidad de la heladera: " + cantidadDeViandas + "\nViandas actuales: " + heladeraViandasActuales;
+        rta = "\uD83D\uDD0B Capacidad de la heladera: " + cantidadDeViandas + "\n⚡ Viandas actuales: " + heladeraViandasActuales +
+                "\n\uD83D\uDC49 Todavía podés depositar "+(cantidadDeViandas-heladeraViandasActuales)+" viandas en la heladera " + heladeraId;
         System.out.println(rta);
         sendMessage(chatId,rta);
     }
