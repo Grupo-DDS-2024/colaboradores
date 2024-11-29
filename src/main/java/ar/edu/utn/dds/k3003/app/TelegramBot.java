@@ -410,6 +410,12 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     private void agregarVianda(String chatId, String codigoQR) throws IOException {
+
+        if (!fachada.buscarXId(Long.parseLong(chatId)).getFormas().contains(FormaDeColaborarActualizadoEnum.DONADOR_VIANDAS)){
+            sendMessage(chatId, "❌ No sos Donador de Viandas. No podés agregar viandas.");
+            return;
+        }
+
         HttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(apiViandas + "/viandas");
 
@@ -652,6 +658,11 @@ public class TelegramBot extends TelegramLongPollingBot {
         HttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(apiLogistica + "/depositar");
 
+        if (!fachada.buscarXId(Long.parseLong(chatId)).getFormas().contains(FormaDeColaborarActualizadoEnum.TRANSPORTADOR) ||
+            !fachada.buscarXId(Long.parseLong(chatId)).getFormas().contains(FormaDeColaborarActualizadoEnum.DONADOR_VIANDAS)) {
+            sendMessage(chatId, "❌ No sos Transportador ni Donador de Viandas. No podés depositar viandas.");
+            return;
+        }
 
         String jsonBody = """
             {
@@ -677,6 +688,12 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private void retirarVianda(String chatId, String codigoQRRetirar, int heladeraIdRetirar) throws IOException {
         HttpClient httpClient = HttpClients.createDefault();
+
+        if (!fachada.buscarXId(Long.parseLong(chatId)).getFormas().contains(FormaDeColaborarActualizadoEnum.TRANSPORTADOR)){
+            sendMessage(chatId, "❌ No sos Transportador. No podés retirar viandas.");
+            return;
+        }
+
         HttpPost httpPost = new HttpPost(apiLogistica + "/retirar");
 
 
@@ -697,6 +714,12 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     private void depositarTraslado(String chatId, Long idTrasladoDepositar) throws IOException {
+
+        if (!fachada.buscarXId(Long.parseLong(chatId)).getFormas().contains(FormaDeColaborarActualizadoEnum.TRANSPORTADOR)){
+            sendMessage(chatId, "❌ No sos Transportador. No podés finalizar un traslado.");
+            return;
+        }
+
         HttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(this.apiLogistica + "/depositar/" + idTrasladoDepositar);
 
@@ -706,6 +729,12 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     private void retirarTraslado(String chatId, Long idTrasladoRetirar) throws IOException {
+
+        if (!fachada.buscarXId(Long.parseLong(chatId)).getFormas().contains(FormaDeColaborarActualizadoEnum.TRANSPORTADOR)){
+            sendMessage(chatId, "❌ No sos Transportador. No podés iniciar un traslado.");
+            return;
+        }
+
         HttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(this.apiLogistica + "/retirar/" + idTrasladoRetirar);
 
@@ -954,6 +983,12 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @SneakyThrows
     private void crearRuta(String chatId, Integer heladeraOrigen, Integer heladeraDestino){
+
+        if (!fachada.buscarXId(Long.parseLong(chatId)).getFormas().contains(FormaDeColaborarActualizadoEnum.TRANSPORTADOR)){
+            sendMessage(chatId, "❌ No sos Transportador. No podés crear rutas.");
+            return;
+        }
+
         HttpClient httpClient = HttpClients.createDefault();
         HttpPost httpPost = new HttpPost(apiLogistica+"/rutas");
         ObjectMapper objectMapper = new ObjectMapper();
@@ -983,6 +1018,12 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @SneakyThrows
     private void trasladosAsignados(String chatId){
+
+        if (!fachada.buscarXId(Long.parseLong(chatId)).getFormas().contains(FormaDeColaborarActualizadoEnum.TRANSPORTADOR)){
+            sendMessage(chatId, "❌ No sos Transportador. No tenés traslados asignados.");
+            return;
+        }
+
         HttpClient httpClient = HttpClients.createDefault();
         System.out.println("URL: " + this.apiLogistica + "/traslados/search/"+chatId+"?mes="+ LocalDateTime.now().getMonthValue()+"&anio="+LocalDateTime.now().getYear());
         HttpGet httpGet = new HttpGet(
