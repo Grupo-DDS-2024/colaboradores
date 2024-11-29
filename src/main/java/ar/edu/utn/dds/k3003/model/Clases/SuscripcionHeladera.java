@@ -60,7 +60,7 @@ public class SuscripcionHeladera {
                     "ID de la suscripción: "+id+"\n" +
                     "Suscripción: "+nombre+"\n"+
                     "ID de la heladera: "+heladera_id+"\n"+
-                    "Valor de notificación: "+cantMinimaViandas+"\n";
+                    "Valor de notificación: "+viandasDisponible+"\n";
         }else {
             return "Suscripcion: " +
                     "ID de la suscripción: "+id+"\n" +
